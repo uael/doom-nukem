@@ -9,6 +9,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 project(wolf3d C)
 
+find_package(PkgConfig QUIET)
+pkg_search_module(GLFW REQUIRED glfw3)
+link_directories(${GLFW_LIBRARY_DIRS})
+
 set(wolf3d_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 set(wolf3d_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
