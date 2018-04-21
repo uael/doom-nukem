@@ -18,10 +18,10 @@ filter-true = $(strip $(filter-out 1 on ON true TRUE,$1))
 
 CMAKE_PRG ?= $(shell (command -v cmake3 || echo cmake))
 CMAKE_BUILD_TYPE ?= Release
-ifeq (Release,$(BUILD_TOOL))
+ifeq (Release,$(CMAKE_BUILD_TYPE))
   BUILD_DIR = build/rel
 else
-  ifeq (Debug,$(BUILD_TOOL))
+  ifeq (Debug,$(CMAKE_BUILD_TYPE))
     BUILD_DIR = build/dev
   else
     BUILD_DIR = build/san
