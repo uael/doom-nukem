@@ -13,7 +13,6 @@
 #ifndef WOLF3D_H
 # define WOLF3D_H
 
-#include <GLFW/glfw3.h>
 #include <libft.h>
 
 #endif

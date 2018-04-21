@@ -13,7 +13,6 @@
 #ifndef LIBFTX_H
 # define LIBFTX_H
 
-#include <GLFW/glfw3.h>
 #include <libft.h>
 
 #endif
