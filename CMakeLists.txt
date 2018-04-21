@@ -24,7 +24,8 @@ add_subdirectory(ext)
 add_executable(wolf3d ${wolf3d_SRCS} ${wolf3d_HDRS} ${wolf3d_HDR})
 target_include_directories(wolf3d PUBLIC ${wolf3d_INC_DIR})
 target_link_libraries(wolf3d PUBLIC ft ftx pthread
-  "-framework AppKit" "-framework OpenGL")
+  "-framework AppKit" "-framework OpenGL" "-framework IOKit"
+  "-framework CoreVideo")
 add_dependencies(wolf3d ft)
 
 if (APPLE)
