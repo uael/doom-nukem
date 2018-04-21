@@ -21,7 +21,7 @@ set(libftx_HDR ${libftx_INC_DIR}/libftx.h)
 
 add_library(ftx ${libftx_SRCS} ${libftx_HDRS} ${libftx_HDR})
 target_include_directories(ftx PUBLIC ${libftx_INC_DIR} ${GLFW_INCLUDE_DIRS})
-target_link_libraries(ftx PUBLIC ft glfw)
+target_link_libraries(ftx PUBLIC ft glfw3)
 add_dependencies(ftx ft)
 
 target_compile_options(ftx

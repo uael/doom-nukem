@@ -19,7 +19,7 @@ set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf3d.h)
 add_subdirectory(ext)
 add_executable(wolf3d ${wolf3d_SRCS} ${wolf3d_HDRS} ${wolf3d_HDR})
 target_include_directories(wolf3d PUBLIC ${wolf3d_INC_DIR})
-target_link_libraries(wolf3d PUBLIC ft)
+target_link_libraries(wolf3d PUBLIC ft ftx)
 add_dependencies(wolf3d ft)
 
 target_compile_options(wolf3d
