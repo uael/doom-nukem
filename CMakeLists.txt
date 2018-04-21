@@ -23,8 +23,16 @@ set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf3d.h)
 add_subdirectory(ext)
 add_executable(wolf3d ${wolf3d_SRCS} ${wolf3d_HDRS} ${wolf3d_HDR})
 target_include_directories(wolf3d PUBLIC ${wolf3d_INC_DIR})
-target_link_libraries(wolf3d PUBLIC ft ftx)
+target_link_libraries(wolf3d PUBLIC ft ftx pthread
+  "-framework AppKit" "-framework OpenGL")
 add_dependencies(wolf3d ft)
+
+if (APPLE)
+  include_directories("/System/Library/Frameworks")
+  find_library(COCOA_LIBRARIES Cocoa)
+  find_library(IOKIT_LIBRARIES IOkit)
+  find_library(COREVIDEO_LIBRARIES CoreVideo)
+endif ()
 
 target_compile_options(wolf3d
   PUBLIC -Wall -Werror -Wextra
