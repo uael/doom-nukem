@@ -9,8 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 project(libftx C)
 
-find_package(PkgConfig QUIET)
-pkg_search_module(SDL2 REQUIRED glfw3)
+find_package(SDL2 REQUIRED)
 link_directories(${SDL2_LIBRARY_DIRS})
 
 set(libftx_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
@@ -22,7 +21,7 @@ set(libftx_HDR ${libftx_INC_DIR}/libftx.h)
 
 add_library(ftx ${libftx_SRCS} ${libftx_HDRS} ${libftx_HDR})
 target_include_directories(ftx PUBLIC ${libftx_INC_DIR} ${SDL2_INCLUDE_DIRS})
-target_link_libraries(ftx PUBLIC ft sdl2)
+target_link_libraries(ftx PUBLIC ft ${SDL2_LIBRARY})
 add_dependencies(ftx ft)
 
 target_compile_options(ftx

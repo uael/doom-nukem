@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
 
-set(CMAKE_MODULE_PATH "${CMAKE_CACHEFILE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "San")
 
 set(CMAKE_C_STANDARD 99)
@@ -9,8 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 project(wolf3d C)
 
-find_package(PkgConfig QUIET)
-pkg_search_module(SDL2 REQUIRED sdl2)
+find_package(SDL2 REQUIRED)
 link_directories(${SDL2_LIBRARY_DIRS})
 
 set(wolf3d_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
@@ -23,7 +22,7 @@ set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf3d.h)
 add_subdirectory(ext)
 add_executable(wolf3d ${wolf3d_SRCS} ${wolf3d_HDRS} ${wolf3d_HDR})
 target_include_directories(wolf3d PUBLIC ${wolf3d_INC_DIR})
-target_link_libraries(wolf3d PUBLIC ft ftx)
+target_link_libraries(wolf3d PUBLIC ft ftx ${SDL2_LIBRARY})
 add_dependencies(wolf3d ft ftx)
 
 if (APPLE)
