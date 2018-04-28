@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libftx.h                                           :+:      :+:    :+:   */
+/*   init.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,28 +10,13 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFTX_H
-# define LIBFTX_H
+#include <libftx.h>
 
-#include <libft.h>
-#include <SDL.h>
-
-struct s_ftx;
-
-typedef int			(t_ftx_hook)(struct s_ftx *ftx, SDL_Event *event);
-
-typedef struct		s_ftx
+int	ftx_exit(t_ftx *ftx, int code, char const *msg, ...)
 {
-	SDL_Window		*win;
-	SDL_Renderer	*renderer;
-	SDL_Texture		*texture;
-	Uint32			*pixels;
-	t_ftx_hook		*hooks[SDL_LASTEVENT];
-}					t_ftx;
-
-extern int			ftx_init(t_ftx *ftx, char const *name, int w, int h);
-extern int			ftx_exit(t_ftx *ftx, int code, char const *msg, ...);
-extern int			ftx_hook(t_ftx *ftx, SDL_EventType type, t_ftx_hook *hook);
-extern int			ftx_loop(t_ftx *ftx);
-
-#endif
+	if (msg)
+	{
+		if (isatty(STDERR_FILENO))
+			ft_printf(CLR_BRED"");
+	}
+}
