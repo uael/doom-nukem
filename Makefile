@@ -11,78 +11,31 @@
 # **************************************************************************** #
 
 PROJECT = wolf3d
+PROJECT_DIR = $(shell pwd)
 
-THIS_DIR = $(shell pwd)
-filter-false = $(strip $(filter-out 0 off OFF false FALSE,$1))
-filter-true = $(strip $(filter-out 1 on ON true TRUE,$1))
-
-CMAKE_PRG ?= $(shell (command -v cmake3 || echo cmake))
-CMAKE_BUILD_TYPE ?= Release
-ifeq (Release,$(CMAKE_BUILD_TYPE))
-  BUILD_DIR = build/rel
-else
-  ifeq (Debug,$(CMAKE_BUILD_TYPE))
-    BUILD_DIR = build/dev
-  else
-    BUILD_DIR = build/san
-  endif
-endif
-
+CMAKE ?= $(shell (command -v cmake3 || echo cmake))
+CMAKE_BUILD_TYPE ?= Debug
 CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE)
-BUILD_TOOL = $(MAKE)
-BUILD_TYPE ?= Unix Makefiles
-BUILD_CMD = $(BUILD_TOOL)
+BUILD_DIR = build/$(CMAKE_BUILD_TYPE)
 
-# Extra CMake flags which extend the default set
-CMAKE_EXTRA_FLAGS ?=
-DEPS_CMAKE_FLAGS ?=
-USE_BUNDLED_DEPS ?=
+all: $(BUILD_DIR)
+	@$(CMAKE) --build $(BUILD_DIR) -- -j4
 
-# For use where we want to make sure only a single job is run.  This does issue
-# a warning, but we need to keep SCRIPTS argument.
-SINGLE_MAKE = export MAKEFLAGS= ; $(MAKE)
+%: $(BUILD_DIR)
+	@$(CMAKE) --build $(BUILD_DIR) --target $@ -- -j4
 
-all: rel
-
-$(PROJECT):$(BUILD_DIR)/.ran-cmake
-	@+$(BUILD_CMD) -C $(BUILD_DIR)
-
-rel:
-	CMAKE_BUILD_TYPE=Release $(MAKE) $(PROJECT)
-
-dev:
-	CMAKE_BUILD_TYPE=Debug $(MAKE) $(PROJECT)
-
-san:
-	CMAKE_BUILD_TYPE=San $(MAKE) $(PROJECT)
-
-%: $(BUILD_DIR)/.ran-cmake
-	@+$(BUILD_CMD) -C $(BUILD_DIR) $@
-
-help: $(BUILD_DIR)/.ran-cmake
-	@+$(BUILD_CMD) -C $(BUILD_DIR) help
-	@echo "... clean"
-	@echo "... fclean"
-	@echo "... re"
-	@echo "... install"
-
-$(BUILD_DIR)/.ran-cmake:
+$(BUILD_DIR):
 	@mkdir -p $(BUILD_DIR)
-	@cd $(BUILD_DIR) && $(CMAKE_PRG) -G '$(BUILD_TYPE)' $(CMAKE_FLAGS) $(CMAKE_EXTRA_FLAGS) $(THIS_DIR)
-	@touch $@
-
-config:
-	@cd $(BUILD_DIR) && $(CMAKE_PRG) -G '$(BUILD_TYPE)' $(CMAKE_FLAGS) $(CMAKE_EXTRA_FLAGS) $(THIS_DIR)
+	@cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_FLAGS) $(PROJECT_DIR)
 
 clean:
-	@+test -d $(BUILD_DIR) && $(BUILD_CMD) -C $(BUILD_DIR) clean || true
+	@[ -d $(BUILD_DIR)/CMakeFiles ] && \
+		find $(BUILD_DIR)/CMakeFiles -name "*.[oa]" -delete
 
-fclean: clean
-	@rm -rf $(BUILD_DIR)
+fclean:
+	@[ -d $(BUILD_DIR) ] && \
+		find $(BUILD_DIR) -name "*.[oa]" -delete
 
 re: fclean all
 
-install: $(PROJECT)
-	@+$(BUILD_CMD) -C $(BUILD_DIR) install
-
-.PHONY: clean distclean re install
+.PHONY: clean depend install $(PROJECT) config fclean re

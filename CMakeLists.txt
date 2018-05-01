@@ -26,26 +26,26 @@ target_link_libraries(wolf3d PUBLIC ft ftx ${SDL2_LIBRARY})
 add_dependencies(wolf3d ft ftx)
 
 if (APPLE)
-  include_directories("/System/Library/Frameworks")
-  find_library(COCOA_LIBRARIES Cocoa)
-  find_library(IOKIT_LIBRARIES IOkit)
-  find_library(COREVIDEO_LIBRARIES CoreVideo)
-  target_link_libraries(wolf3d PUBLIC
-    "-framework AppKit" "-framework OpenGL"
-    "-framework IOKit" "-framework CoreVideo")
+	include_directories("/System/Library/Frameworks")
+	find_library(COCOA_LIBRARIES Cocoa)
+	find_library(IOKIT_LIBRARIES IOkit)
+	find_library(COREVIDEO_LIBRARIES CoreVideo)
+	target_link_libraries(wolf3d PUBLIC
+		"-framework AppKit" "-framework OpenGL"
+		"-framework IOKit" "-framework CoreVideo")
 endif ()
 
 target_compile_options(wolf3d
-  PUBLIC -Wall -Werror -Wextra
-  PUBLIC -fomit-frame-pointer -ansi
-  PUBLIC -Wno-missing-field-initializers)
+	PUBLIC -Wall -Werror -Wextra
+	PUBLIC -fomit-frame-pointer -ansi
+	PUBLIC -Wno-missing-field-initializers)
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3")
-if(CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
-  string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-endif()
+if (CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
+	string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+endif ()
 if (CMAKE_BUILD_TYPE MATCHES San)
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address")
+	set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address")
 endif ()
 
 install(FILES ${wolf3d_HDRS} DESTINATION include/wolf3d)

@@ -14,9 +14,11 @@
 
 int	ftx_exit(t_ftx *ftx, int code, char const *msg, ...)
 {
+	(void)ftx;
 	if (msg)
 	{
 		if (isatty(STDERR_FILENO))
 			ft_printf(CLR_BRED"");
 	}
+	return (code);
 }
