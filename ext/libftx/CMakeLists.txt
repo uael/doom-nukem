@@ -14,7 +14,9 @@ link_directories(${SDL2_LIBRARY_DIRS})
 set(libftx_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 set(libftx_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
-file(GLOB_RECURSE libftx_SRCS ${libftx_SRCS} ${libftx_SRC_DIR}/*.c)
+set(libftx_SRCS
+	${libftx_SRC_DIR}/exit.c
+	${libftx_SRC_DIR}/init.c)
 file(GLOB_RECURSE libftx_HDRS ${libftx_HDRS} ${libftx_INC_DIR}/libftx/*.h)
 set(libftx_HDR ${libftx_INC_DIR}/libftx.h)
 
