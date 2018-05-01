@@ -15,7 +15,8 @@ set(wolf3d_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 set(wolf3d_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
 set(wolf3d_SRCS
-	${wolf3d_SRC_DIR}/main.c)
+	${wolf3d_SRC_DIR}/main.c
+	${wolf3d_SRC_DIR}/win.c)
 file(GLOB_RECURSE wolf3d_HDRS ${wolf3d_HDRS} ${wolf3d_INC_DIR}/wolf3d/*.h)
 set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf3d.h)
 
@@ -29,7 +30,7 @@ target_compile_options(wolf3d PUBLIC -Wall -Werror -Wextra -ansi)
 set_target_properties(wolf3d PROPERTIES OUTPUT_NAME "wolf3d")
 set_target_properties(wolf3d PROPERTIES OUTPUT_NAME_DEBUG "wolf3d.dev")
 set_target_properties(wolf3d PROPERTIES OUTPUT_NAME_SAN "wolf3d.san")
-set_target_properties(wolf3d PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
+set_target_properties(wolf3d PROPERTIES RUNTIME_OUTPUT_DIRECTORY
 	${CMAKE_CURRENT_LIST_DIR})
 
 if (APPLE)

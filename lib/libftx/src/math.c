@@ -1,38 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_umin.c                                          :+:      :+:    :+:   */
+/*   math.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/07 09:52:30 by alucas-           #+#    #+#             */
-/*   Updated: 2017/11/18 17:19:30 by null             ###   ########.fr       */
+/*   Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#             */
+/*   Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/math.h"
+#include "libftx/math.h"
 
-inline uint8_t	ft_u8min(uint8_t a, uint8_t b)
+inline int		ftx_floor(float x)
 {
-	return (a < b ? a : b);
+	return ((int)x - (x < (int)x));
 }
 
-inline uint16_t	ft_u16min(uint16_t a, uint16_t b)
+inline int		ftx_ceil(float x)
 {
-	return (a < b ? a : b);
-}
-
-inline uint32_t	ft_u32min(uint32_t a, uint32_t b)
-{
-	return (a < b ? a : b);
-}
-
-inline uint64_t	ft_u64min(uint64_t a, uint64_t b)
-{
-	return (a < b ? a : b);
-}
-
-inline size_t	ft_umin(size_t a, size_t b)
-{
-	return (a < b ? a : b);
+	return ((int)x + (x > (int)x));
 }

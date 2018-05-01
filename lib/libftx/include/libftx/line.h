@@ -1,24 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   libft/math/point.h                                 :+:      :+:    :+:   */
+/*   libftx/line.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/12/10 10:28:45 by alucas-           #+#    #+#             */
-/*   Updated: 2017/12/10 10:34:53 by alucas-          ###   ########.fr       */
+/*   Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#             */
+/*   Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef LIBFT_MATH_POINT_H
-# define LIBFT_MATH_POINT_H
+#ifndef LIBFTX_LINE_H
+# define LIBFTX_LINE_H
 
-# include <math.h>
+# include "point.h"
 
-typedef struct	s_point
+typedef struct	s_ln
 {
-	int			x;
-	int			y;
-}				t_point;
+	t_v2		a;
+	t_v2		b;
+}				t_ln;
+
+extern t_ln		ftx_lnviewport(float focal);
+extern t_v2		ftx_lnlerp(t_ln line, float n);
+extern t_ln		ftx_lnrot(t_ln line, float t);
 
 #endif

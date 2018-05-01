@@ -15,8 +15,10 @@ set(libftx_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 set(libftx_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
 set(libftx_SRCS
-	${libftx_SRC_DIR}/exit.c
-	${libftx_SRC_DIR}/init.c)
+	${libftx_SRC_DIR}/hit.c
+	${libftx_SRC_DIR}/line.c
+	${libftx_SRC_DIR}/math.c
+	${libftx_SRC_DIR}/point.c)
 file(GLOB_RECURSE libftx_HDRS ${libftx_HDRS} ${libftx_INC_DIR}/libftx/*.h)
 set(libftx_HDR ${libftx_INC_DIR}/libftx.h)
 

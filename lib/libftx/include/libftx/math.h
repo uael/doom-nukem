@@ -1,38 +1,36 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_umin.c                                          :+:      :+:    :+:   */
+/*   libftx/math.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/07 09:52:30 by alucas-           #+#    #+#             */
-/*   Updated: 2017/11/18 17:19:30 by null             ###   ########.fr       */
+/*   Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#             */
+/*   Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/math.h"
+#ifndef LIBFTX_MATH_H
+# define LIBFTX_MATH_H
 
-inline uint8_t	ft_u8min(uint8_t a, uint8_t b)
-{
-	return (a < b ? a : b);
-}
+# include "point.h"
 
-inline uint16_t	ft_u16min(uint16_t a, uint16_t b)
-{
-	return (a < b ? a : b);
-}
+/*
+** @brief
+** TODO
+**
+** @param x
+** @return
+*/
+extern int		ftx_floor(float x);
 
-inline uint32_t	ft_u32min(uint32_t a, uint32_t b)
-{
-	return (a < b ? a : b);
-}
+/*
+** @brief
+** TODO
+**
+** @param x
+** @return
+*/
+extern int		ftx_ceil(float x);
 
-inline uint64_t	ft_u64min(uint64_t a, uint64_t b)
-{
-	return (a < b ? a : b);
-}
-
-inline size_t	ft_umin(size_t a, size_t b)
-{
-	return (a < b ? a : b);
-}
+#endif

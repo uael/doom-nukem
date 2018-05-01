@@ -1,38 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_umin.c                                          :+:      :+:    :+:   */
+/*   libftx/hit.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/11/07 09:52:30 by alucas-           #+#    #+#             */
-/*   Updated: 2017/11/18 17:19:30 by null             ###   ########.fr       */
+/*   Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#             */
+/*   Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft/math.h"
+#ifndef LIBFTX_HIT_H
+# define LIBFTX_HIT_H
 
-inline uint8_t	ft_u8min(uint8_t a, uint8_t b)
-{
-	return (a < b ? a : b);
-}
+# include "point.h"
 
-inline uint16_t	ft_u16min(uint16_t a, uint16_t b)
+typedef struct	s_hit
 {
-	return (a < b ? a : b);
-}
+	int			tile;
+	t_v2		where;
+}				t_hit;
 
-inline uint32_t	ft_u32min(uint32_t a, uint32_t b)
-{
-	return (a < b ? a : b);
-}
+extern t_hit	ftx_hitcast(t_v2 w, t_v2 dir, char const **walling);
 
-inline uint64_t	ft_u64min(uint64_t a, uint64_t b)
-{
-	return (a < b ? a : b);
-}
-
-inline size_t	ft_umin(size_t a, size_t b)
-{
-	return (a < b ? a : b);
-}
+#endif

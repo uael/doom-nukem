@@ -14,25 +14,25 @@
 
 inline uint8_t	ft_u8max(uint8_t a, uint8_t b)
 {
-	return (MAX(a, b));
+	return (a > b ? a : b);
 }
 
 inline uint16_t	ft_u16max(uint16_t a, uint16_t b)
 {
-	return (MAX(a, b));
+	return (a > b ? a : b);
 }
 
 inline uint32_t	ft_u32max(uint32_t a, uint32_t b)
 {
-	return (MAX(a, b));
+	return (a > b ? a : b);
 }
 
 inline uint64_t	ft_u64max(uint64_t a, uint64_t b)
 {
-	return (MAX(a, b));
+	return (a > b ? a : b);
 }
 
 inline size_t	ft_umax(size_t a, size_t b)
 {
-	return (MAX(a, b));
+	return (a > b ? a : b);
 }

@@ -12,6 +12,11 @@
 
 #include "libft/math.h"
 
+inline t_bool	ft_ispow2(ssize_t n)
+{
+	return ((t_bool)(n && ((n & (~n + 1)) == n)));
+}
+
 inline uint64_t	ft_pow(int64_t n, int16_t p)
 {
 	uint64_t	r;

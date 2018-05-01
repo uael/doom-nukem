@@ -13,6 +13,6 @@
 #ifndef WOLF3D_H
 # define WOLF3D_H
 
-#include <libft.h>
+# include "wolf3d/win.h"
 
 #endif
