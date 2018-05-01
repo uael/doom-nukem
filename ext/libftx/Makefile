@@ -12,17 +12,17 @@
 
 BUILD_TYPE ?= Release
 
+CMAKE ?= cmake
 CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
-MAKE_FLAGS ?= -j8 --no-print-directory
+MAKE_FLAGS ?= -j8
 
 BUILD_DIR = build/$(BUILD_TYPE)
 BUILD_PROJ_DIR = $(BUILD_DIR)/CMakeFiles
 
-all: $(BUILD_DIR)
-	@cmake --build $(BUILD_DIR) -- $(MAKE_FLAGS)
+.DEFAULT_GOAL := all
 
 $(BUILD_DIR) config:
-	@mkdir -p $(BUILD_DIR) && cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(CURDIR)
+	@mkdir -p $(BUILD_DIR); cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_FLAGS) $(CURDIR)
 
 clean:
 	@[ -d $(BUILD_PROJ_DIR) ] && find $(BUILD_PROJ_DIR) -name "*.[oa]" -delete
@@ -33,9 +33,9 @@ distclean fclean:
 mrproper:
 	@rm -rf $(BUILD_DIR)
 
-%: $(BUILD_DIR)
-	@cmake --build $(BUILD_DIR) --target $@ -- $(MAKE_FLAGS)
-
 re: fclean all
+
+%: $(BUILD_DIR)
+	@$(CMAKE) --build $(BUILD_DIR) --target $@ -- $(MAKE_FLAGS)
 
 .PHONY: clean depend install config distclean fclean re
