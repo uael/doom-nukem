@@ -11,31 +11,31 @@
 # **************************************************************************** #
 
 PROJECT = wolf3d
-PROJECT_DIR = $(shell pwd)
+BUILD_TYPE ?= Release
+CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
+MAKE_FLAGS ?= -j8 --no-print-directory
 
-CMAKE ?= $(shell (command -v cmake3 || echo cmake))
-CMAKE_BUILD_TYPE ?= Debug
-CMAKE_FLAGS := -DCMAKE_BUILD_TYPE=$(CMAKE_BUILD_TYPE)
-BUILD_DIR = build/$(CMAKE_BUILD_TYPE)
+BUILD_DIR = build/$(BUILD_TYPE)
+BUILD_SUB_DIR = $(BUILD_DIR)/CMakeFiles
 
 all: $(BUILD_DIR)
-	@$(CMAKE) --build $(BUILD_DIR) -- -j4
+	@cmake --build $(BUILD_DIR) -- $(MAKE_FLAGS)
 
-%: $(BUILD_DIR)
-	@$(CMAKE) --build $(BUILD_DIR) --target $@ -- -j4
-
-$(BUILD_DIR):
-	@mkdir -p $(BUILD_DIR)
-	@cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_FLAGS) $(PROJECT_DIR)
+$(BUILD_DIR) config:
+	@mkdir -p $(BUILD_DIR) && cd $(BUILD_DIR) && cmake $(CMAKE_FLAGS) $(CURDIR)
 
 clean:
-	@[ -d $(BUILD_DIR)/CMakeFiles ] && \
-		find $(BUILD_DIR)/CMakeFiles -name "*.[oa]" -delete
+	@[ -d $(BUILD_SUB_DIR) ] && find $(BUILD_SUB_DIR) -name "*.[oa]" -delete
 
-fclean:
-	@[ -d $(BUILD_DIR) ] && \
-		find $(BUILD_DIR) -name "*.[oa]" -delete
+distclean fclean:
+	@[ -d $(BUILD_DIR) ] && find $(BUILD_DIR) -name "*.[oa]" -delete
+
+mrproper:
+	@rm -rf $(BUILD_DIR)
+
+%: $(BUILD_DIR)
+	@cmake --build $(BUILD_DIR) --target $@ -- $(MAKE_FLAGS)
 
 re: fclean all
 
-.PHONY: clean depend install $(PROJECT) config fclean re
+.PHONY: clean depend install $(PROJECT) config distclean fclean re

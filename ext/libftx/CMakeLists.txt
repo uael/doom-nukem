@@ -5,7 +5,6 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "San")
 
 set(CMAKE_C_STANDARD 99)
 set(BUILD_SHARED_LIBS OFF)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 project(libftx C)
 
@@ -23,28 +22,31 @@ add_library(ftx ${libftx_SRCS} ${libftx_HDRS} ${libftx_HDR})
 target_include_directories(ftx PUBLIC ${libftx_INC_DIR} ${SDL2_INCLUDE_DIRS})
 target_link_libraries(ftx PUBLIC ft ${SDL2_LIBRARY})
 add_dependencies(ftx ft)
+target_compile_options(ftx PUBLIC -Wall -Werror -Wextra -ansi)
 
-target_compile_options(ftx
-  PUBLIC -Wall -Werror -Wextra
-  PUBLIC -fomit-frame-pointer -ansi
-  PUBLIC -Wno-missing-field-initializers)
+set_target_properties(ftx PROPERTIES OUTPUT_NAME "ftx")
+set_target_properties(ftx PROPERTIES OUTPUT_NAME_DEBUG "ftx.dev")
+set_target_properties(ftx PROPERTIES OUTPUT_NAME_SAN "ftx.san")
+set_target_properties(ftx PROPERTIES ARCHIVE_OUTPUT_DIRECTORY
+	${CMAKE_CURRENT_LIST_DIR})
 
 if (APPLE)
-  include_directories("/System/Library/Frameworks")
-  find_library(COCOA_LIBRARIES Cocoa)
-  find_library(IOKIT_LIBRARIES IOkit)
-  find_library(COREVIDEO_LIBRARIES CoreVideo)
-  target_link_libraries(ftx PUBLIC
-    "-framework AppKit" "-framework OpenGL"
-    "-framework IOKit" "-framework CoreVideo")
+	include_directories("/System/Library/Frameworks")
+	find_library(COCOA_LIBRARIES Cocoa)
+	find_library(IOKIT_LIBRARIES IOkit)
+	find_library(COREVIDEO_LIBRARIES CoreVideo)
+	target_link_libraries(ftx PUBLIC
+		"-framework AppKit" "-framework OpenGL"
+		"-framework IOKit" "-framework CoreVideo")
 endif ()
 
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3")
-if(CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
-  string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-endif()
+if (CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
+	string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+endif ()
 if (CMAKE_BUILD_TYPE MATCHES San)
-  set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -fsanitize=address")
+	set_target_properties(ftx PROPERTIES COMPILE_FLAGS "-fsanitize=address")
+	set_target_properties(ftx PROPERTIES LINK_FLAGS "-fsanitize=address")
 endif ()
 
 install(FILES ${libftx_HDRS} DESTINATION include/libftx)
