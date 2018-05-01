@@ -38,4 +38,4 @@ mrproper:
 
 re: fclean all
 
-.PHONY: clean depend install $(PROJECT) config distclean fclean re
+.PHONY: clean depend install config distclean fclean re
