@@ -13,7 +13,6 @@
 #ifndef LIBFTX_H
 # define LIBFTX_H
 
-# include "libftx/hit.h"
 # include "libftx/line.h"
 # include "libftx/math.h"
 # include "libftx/point.h"

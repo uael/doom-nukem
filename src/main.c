@@ -11,30 +11,15 @@
 /* ************************************************************************** */
 
 #include <SDL2/SDL.h>
-#include <math.h>
+#include <libftx.h>
 #include <stdbool.h>
 #include <stdio.h>
 
 typedef struct
 {
-	float x;
-	float y;
-}
-	Point;
-
-typedef struct
-{
 	int tile;
-	Point where;
-}
-	Hit;
-
-typedef struct
-{
-	Point a;
-	Point b;
-}
-	Line;
+	t_v2 where;
+} t_hit;
 
 typedef struct
 {
@@ -63,9 +48,9 @@ typedef struct
 
 typedef struct
 {
-	Line fov;
-	Point where;
-	Point velocity;
+	t_ln fov;
+	t_v2 where;
+	t_v2 velocity;
 	float speed;
 	float acceleration;
 	float theta;
@@ -80,91 +65,8 @@ typedef struct
 }
 	Map;
 
-// Rotates the player by some radian value.
-static Point turn(const Point a, const float t)
-{
-	const Point b = { a.x * cosf(t) - a.y * sinf(t), a.x * sinf(t) + a.y * cosf(t) };
-	return b;
-}
-
-// Rotates a point 90 degrees.
-static Point rag(const Point a)
-{
-	const Point b = { -a.y, a.x };
-	return b;
-}
-
-// Subtracts two points.
-static Point sub(const Point a, const Point b)
-{
-	const Point c = { a.x - b.x, a.y - b.y };
-	return c;
-}
-
-// Adds two points.
-static Point add(const Point a, const Point b)
-{
-	const Point c = { a.x + b.x, a.y + b.y };
-	return c;
-}
-
-// Multiplies a point by a scalar value.
-static Point mul(const Point a, const float n)
-{
-	const Point b = { a.x * n, a.y * n };
-	return b;
-}
-
-// Returns the magnitude of a point.
-static float mag(const Point a)
-{
-	return sqrtf(a.x * a.x + a.y * a.y);
-}
-
-// Returns the unit vector of a point.
-static Point unit(const Point a)
-{
-	return mul(a, 1.0f / mag(a));
-}
-
-// Returns the slope of a point.
-static float slope(const Point a)
-{
-	return a.y / a.x;
-}
-
-// Fast floor (math.h is too slow).
-static int fl(const float x)
-{
-	return (int) x - (x < (int) x);
-}
-
-// Fast ceil (math.h is too slow).
-static int cl(const float x)
-{
-	return (int) x + (x > (int) x);
-}
-
-// Steps horizontally along a square grid.
-static Point sh(const Point a, const Point b)
-{
-	const float x = b.x > 0.0f ? fl(a.x + 1.0f) : cl(a.x - 1.0f);
-	const float y = slope(b) * (x - a.x) + a.y;
-	const Point c = { x, y };
-	return c;
-}
-
-// Steps vertically along a square grid.
-static Point sv(const Point a, const Point b)
-{
-	const float y = b.y > 0.0f ? fl(a.y + 1.0f) : cl(a.y - 1.0f);
-	const float x = (y - a.y) / slope(b) + a.x;
-	const Point c = { x, y };
-	return c;
-}
-
 // Returns a decimal value of the ascii tile value on the map.
-static int tile(const Point a, const char** const tiles)
+static int tile(const t_v2 a, const char** const tiles)
 {
 	const int x = a.x;
 	const int y = a.y;
@@ -178,27 +80,27 @@ static float dec(const float x)
 }
 
 // Casts a ray from <where> in unit <direction> until a <walling> tile is hit.
-static Hit cast(const Point where, const Point direction, const char** const walling)
+static t_hit cast(const t_v2 where, const t_v2 direction, const char** const walling)
 {
 	// Determine whether to step horizontally or vertically on the grid.
-	const Point hor = sh(where, direction);
-	const Point ver = sv(where, direction);
-	const Point ray = mag(sub(hor, where)) < mag(sub(ver, where)) ? hor : ver;
+	const t_v2 hor = ftx_v2sh(where, direction);
+	const t_v2 ver = ftx_v2sv(where, direction);
+	const t_v2 ray = ftx_v2mag(ftx_v2sub(hor, where)) < ftx_v2mag(ftx_v2sub(ver, where)) ? hor : ver;
 	// Due to floating point error, the step may not make it to the next grid square.
 	// Three directions (dy, dx, dc) of a tiny step will be added to the ray
 	// depending on if the ray hit a horizontal wall, a vertical wall, or the corner
 	// of two walls, respectively.
-	const Point dc = mul(direction, 0.01f);
-	const Point dx = { dc.x, 0.0f };
-	const Point dy = { 0.0f, dc.y };
-	const Point test = add(ray,
+	const t_v2 dc = ftx_v2mul(direction, 0.01f);
+	const t_v2 dx = { dc.x, 0.0f };
+	const t_v2 dy = { 0.0f, dc.y };
+	const t_v2 test = ftx_v2add(ray,
 		// Tiny step for corner of two grid squares.
-		mag(sub(hor, ver)) < 1e-3f ? dc :
+		ftx_v2mag(ftx_v2sub(hor, ver)) < 1e-3f ? dc :
 			// Tiny step for vertical grid square.
 			dec(ray.x) == 0.0f ? dx :
 				// Tiny step for a horizontal grid square.
 				dy);
-	const Hit hit = { tile(test, walling), ray };
+	const t_hit hit = { tile(test, walling), ray };
 	// If a wall was not hit, then continue advancing the ray.
 	return hit.tile ? hit : cast(ray, direction, walling);
 }
@@ -208,19 +110,6 @@ static Hit cast(const Point where, const Point direction, const char** const wal
 static float pcast(const float size, const int yres, const int y)
 {
 	return size / (2 * (y + 1) - yres);
-}
-
-// Rotates a line by some radian amount.
-static Line rotate(const Line l, const float t)
-{
-	const Line line = { turn(l.a, t), turn(l.b, t) };
-	return line;
-}
-
-// Linear interpolation.
-static Point lerp(const Line l, const float n)
-{
-	return add(l.a, mul(sub(l.b, l.a), n));
 }
 
 // Setups the software gpu.
@@ -299,24 +188,24 @@ static Hero spin(Hero hero, const uint8_t* key)
 // Moves the hero when w,a,s,d are held down. Handles collision detection for the walls.
 static Hero move(Hero hero, const char** const walling, const uint8_t* key)
 {
-	const Point last = hero.where, zero = { 0.0f, 0.0f };
+	const t_v2 last = hero.where, zero = { 0.0f, 0.0f };
 	// Accelerates with key held down.
 	if(key[SDL_SCANCODE_W] || key[SDL_SCANCODE_S] || key[SDL_SCANCODE_D] || key[SDL_SCANCODE_A])
 	{
-		const Point reference = { 1.0f, 0.0f };
-		const Point direction = turn(reference, hero.theta);
-		const Point acceleration = mul(direction, hero.acceleration);
-		if(key[SDL_SCANCODE_W]) hero.velocity = add(hero.velocity, acceleration);
-		if(key[SDL_SCANCODE_S]) hero.velocity = sub(hero.velocity, acceleration);
-		if(key[SDL_SCANCODE_D]) hero.velocity = add(hero.velocity, rag(acceleration));
-		if(key[SDL_SCANCODE_A]) hero.velocity = sub(hero.velocity, rag(acceleration));
+		const t_v2 reference = { 1.0f, 0.0f };
+		const t_v2 direction = ftx_v2turn(reference, hero.theta);
+		const t_v2 acceleration = ftx_v2mul(direction, hero.acceleration);
+		if(key[SDL_SCANCODE_W]) hero.velocity = ftx_v2add(hero.velocity, acceleration);
+		if(key[SDL_SCANCODE_S]) hero.velocity = ftx_v2sub(hero.velocity, acceleration);
+		if(key[SDL_SCANCODE_D]) hero.velocity = ftx_v2add(hero.velocity, ftx_v2rag(acceleration));
+		if(key[SDL_SCANCODE_A]) hero.velocity = ftx_v2sub(hero.velocity, ftx_v2rag(acceleration));
 	}
 		// Otherwise, decelerates (exponential decay).
-	else hero.velocity = mul(hero.velocity, 1.0f - hero.acceleration / hero.speed);
+	else hero.velocity = ftx_v2mul(hero.velocity, 1.0f - hero.acceleration / hero.speed);
 	// Caps velocity if top speed is exceeded.
-	if(mag(hero.velocity) > hero.speed) hero.velocity = mul(unit(hero.velocity), hero.speed);
+	if(ftx_v2mag(hero.velocity) > hero.speed) hero.velocity = ftx_v2mul(ftx_v2unit(hero.velocity), hero.speed);
 	// Moves.
-	hero.where = add(hero.where, hero.velocity);
+	hero.where = ftx_v2add(hero.where, hero.velocity);
 	// Sets velocity to zero if there is a collision and puts hero back in bounds.
 	if(tile(hero.where, walling))
 	{
@@ -339,7 +228,7 @@ static uint32_t color(const int tile)
 }
 
 // Calculations wall size using the <corrected> ray to the wall.
-static Wall project(const int xres, const int yres, const float focal, const Point corrected)
+static Wall project(const int xres, const int yres, const float focal, const t_v2 corrected)
 {
 	// Normal distance of corrected ray is clamped to some small value else wall size will shoot to infinity.
 	const float normal = corrected.x < 1e-2f ? 1e-2f : corrected.x;
@@ -356,26 +245,26 @@ static Wall project(const int xres, const int yres, const float focal, const Poi
 static void render(const Hero hero, const Map map, const Gpu gpu)
 {
 	const int t0 = SDL_GetTicks();
-	const Line camera = rotate(hero.fov, hero.theta);
+	const t_ln camera = ftx_lnrot(hero.fov, hero.theta);
 	const Display display = lock(gpu);
 	// Ray cast for all columns of the window.
 	for(int x = 0; x < gpu.xres; x++)
 	{
-		const Point direction = lerp(camera, x / (float) gpu.xres);
-		const Hit hit = cast(hero.where, direction, map.walling);
-		const Point ray = sub(hit.where, hero.where);
-		const Line trace = { hero.where, hit.where };
-		const Point corrected = turn(ray, -hero.theta);
+		const t_v2 direction = ftx_lnlerp(camera, x / (float) gpu.xres);
+		const t_hit hit = cast(hero.where, direction, map.walling);
+		const t_v2 ray = ftx_v2sub(hit.where, hero.where);
+		const t_ln trace = { hero.where, hit.where };
+		const t_v2 corrected = ftx_v2turn(ray, -hero.theta);
 		const Wall wall = project(gpu.xres, gpu.yres, hero.fov.a.x, corrected);
 		// Renders flooring.
 		for(int y = 0; y < wall.bot; y++)
-			put(display, x, y, color(tile(lerp(trace, -pcast(wall.size, gpu.yres, y)), map.floring)));
+			put(display, x, y, color(tile(ftx_lnlerp(trace, -pcast(wall.size, gpu.yres, y)), map.floring)));
 		// Renders wall.
 		for(int y = wall.bot; y < wall.top; y++)
 			put(display, x, y, color(hit.tile));
 		// Renders ceiling.
 		for(int y = wall.top; y < gpu.yres; y++)
-			put(display, x, y, color(tile(lerp(trace, +pcast(wall.size, gpu.yres, y)), map.ceiling)));
+			put(display, x, y, color(tile(ftx_lnlerp(trace, +pcast(wall.size, gpu.yres, y)), map.ceiling)));
 	}
 	unlock(gpu);
 	present(gpu);
@@ -394,20 +283,10 @@ static bool done()
 		|| event.key.keysym.sym == SDLK_ESCAPE;
 }
 
-// Changes the field of view. A focal value of 1.0 is 90 degrees.
-static Line viewport(const float focal)
-{
-	const Line fov = {
-		{ focal, -1.0f },
-		{ focal, +1.0f },
-	};
-	return fov;
-}
-
 static Hero born(const float focal)
 {
 	const Hero hero = {
-		viewport(focal),
+		ftx_lnviewport(focal),
 		// Where.
 		{ 3.5f, 3.5f },
 		// Velocity.
@@ -461,7 +340,7 @@ int main(int argc, char* argv[])
 {
 	(void) argc;
 	(void) argv;
-	const Gpu gpu = setup(700, 400, true);
+	const Gpu gpu = setup(1920, 1080, true);
 	const Map map = build();
 	Hero hero = born(0.8f);
 	while(!done())

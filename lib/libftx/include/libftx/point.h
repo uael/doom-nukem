@@ -23,8 +23,8 @@ typedef struct	s_v2
 
 /*
 ** @brief
- * Rotates the vector by some radian value.
- *
+** Rotates the vector by some radian value.
+**
 ** @param a The vector to rotate.
 ** @param t The angle in radian.
 ** @return  The new rotated vector.
