@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   display.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -12,18 +12,30 @@
 
 #include <wolf.h>
 
-int	main(int ac, char *av[])
+t_display	wl_lock(t_wl *wl)
 {
-	t_wl			wl;
-	uint8_t const	*keyboard;
+	void* screen;
+	int pitch;
+	t_display display;
 
-	(void) ac;
-	(void) av;
-	wl_init(&wl, 1920, 1080);
-	while(!wl_isdone(&wl))
-	{
-		keyboard = SDL_GetKeyboardState(NULL);
-		wl_handle(&wl, keyboard);
-	}
-	return (EXIT_FAILURE);
+	SDL_LockTexture(wl->texture, NULL, &screen, &pitch);
+	display = (t_display ){ (uint32_t*) screen, pitch / (int)sizeof(uint32_t) };
+	return display;
+}
+
+inline void	wl_put(t_display display, int x, int y, uint32_t color)
+{
+	display.pixels[y + x * display.size] = color;
+}
+
+void		wl_render(t_wl *wl)
+{
+	const SDL_Rect dst = {
+		(wl->width - wl->height) / 2,
+		(wl->height - wl->width) / 2,
+		wl->height, wl->width,};
+
+	SDL_RenderCopyEx(wl->renderer, wl->texture, NULL, &dst, -90, NULL,
+		SDL_FLIP_NONE);
+	SDL_RenderPresent(wl->renderer);
 }

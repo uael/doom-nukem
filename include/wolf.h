@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   wolf.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,20 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <wolf.h>
+#ifndef WOLF_H
+# define WOLF_H
 
-int	main(int ac, char *av[])
-{
-	t_wl			wl;
-	uint8_t const	*keyboard;
+# include "wolf/display.h"
+# include "wolf/field.h"
+# include "wolf/game.h"
 
-	(void) ac;
-	(void) av;
-	wl_init(&wl, 1920, 1080);
-	while(!wl_isdone(&wl))
-	{
-		keyboard = SDL_GetKeyboardState(NULL);
-		wl_handle(&wl, keyboard);
-	}
-	return (EXIT_FAILURE);
-}
+#endif

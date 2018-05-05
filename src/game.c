@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   init.c                                             :+:      :+:    :+:   */
+/*   game.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,9 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <wolf3d.h>
+#include <wolf.h>
 
-void	wl_init(t_wl *wl, int x, int y)
+void		wl_init(t_wl *wl, int x, int y)
 {
 	bzero(wl, sizeof(t_wl));
 	SDL_Init(SDL_INIT_VIDEO);
@@ -27,7 +27,7 @@ void	wl_init(t_wl *wl, int x, int y)
 		wl_exit(wl, EXIT_FAILURE, "%s\n", SDL_GetError());
 }
 
-int		wl_exit(t_wl *wl, int ecode, char const *msg, ...)
+int			wl_exit(t_wl *wl, int ecode, char const *msg, ...)
 {
 	va_list ap;
 
@@ -50,7 +50,23 @@ int		wl_exit(t_wl *wl, int ecode, char const *msg, ...)
 	exit(ecode);
 }
 
-void	wl_listen(t_wl *wl, SDL_EventType type, t_eventcb *cb);
-void	wl_put(t_wl *wl, int x, int y, uint32_t color);
-void	wl_lock(t_wl *wl);
-void	wl_draw(t_wl *wl);
+inline int	wl_isdone(t_wl *wl)
+{
+	SDL_Event event;
+
+	(void)wl;
+	SDL_PollEvent(&event);
+	return (event.type == SDL_QUIT
+		|| event.key.keysym.sym == SDLK_END
+		|| event.key.keysym.sym == SDLK_ESCAPE);
+}
+
+void		wl_handle(t_wl *wl, uint8_t const *keyboard)
+{
+	t_display display;
+
+	(void)keyboard;
+	display = wl_lock(wl);
+	wl_put(display, 0, 0, 1);
+	wl_render(wl);
+}

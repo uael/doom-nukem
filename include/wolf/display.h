@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   wolf/display.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,20 +10,19 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <wolf.h>
+#ifndef WOLF_DISPLAY_H
+# define WOLF_DISPLAY_H
 
-int	main(int ac, char *av[])
+# include "game.h"
+
+typedef struct		s_display
 {
-	t_wl			wl;
-	uint8_t const	*keyboard;
+	uint32_t		*pixels;
+	int				size;
+}					t_display;
 
-	(void) ac;
-	(void) av;
-	wl_init(&wl, 1920, 1080);
-	while(!wl_isdone(&wl))
-	{
-		keyboard = SDL_GetKeyboardState(NULL);
-		wl_handle(&wl, keyboard);
-	}
-	return (EXIT_FAILURE);
-}
+extern t_display	wl_lock(t_wl *wl);
+extern void			wl_put(t_display display, int x, int y, uint32_t color);
+extern void			wl_render(t_wl *wl);
+
+#endif
