@@ -15,7 +15,6 @@ set(libftx_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 set(libftx_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
 set(libftx_SRCS
-	${libftx_SRC_DIR}/hit.c
 	${libftx_SRC_DIR}/line.c
 	${libftx_SRC_DIR}/math.c
 	${libftx_SRC_DIR}/point.c)

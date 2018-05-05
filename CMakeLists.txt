@@ -15,8 +15,8 @@ set(wolf3d_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
 set(wolf3d_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
 
 set(wolf3d_SRCS
-	${wolf3d_SRC_DIR}/main.c
-	${wolf3d_SRC_DIR}/win.c)
+	${wolf3d_SRC_DIR}/init.c
+	${wolf3d_SRC_DIR}/main.c)
 file(GLOB_RECURSE wolf3d_HDRS ${wolf3d_HDRS} ${wolf3d_INC_DIR}/wolf3d/*.h)
 set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf3d.h)
 
