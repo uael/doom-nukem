@@ -14,7 +14,7 @@
 
 void		wl_init(t_wl *wl, int x, int y)
 {
-	bzero(wl, sizeof(t_wl));
+	ft_bzero(wl, sizeof(t_wl));
 	SDL_Init(SDL_INIT_VIDEO);
 	if (!(wl->window = SDL_CreateWindow("wolf3d", SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED, x, y, SDL_WINDOW_SHOWN)))
