@@ -18,9 +18,9 @@ set(wolf3d_SRCS
 	${wolf3d_SRC_DIR}/display.c
 	${wolf3d_SRC_DIR}/field.c
 	${wolf3d_SRC_DIR}/game.c
-	${wolf3d_SRC_DIR}/main.c)
+	${wolf3d_SRC_DIR}/main.c src/hero.c)
 file(GLOB_RECURSE wolf3d_HDRS ${wolf3d_HDRS} ${wolf3d_INC_DIR}/wolf/*.h)
-set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf.h)
+set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf.h include/wolf/hero.h)
 
 add_subdirectory(lib)
 add_executable(wolf3d ${wolf3d_SRCS} ${wolf3d_HDRS} ${wolf3d_HDR})

@@ -16,5 +16,6 @@
 # include "wolf/display.h"
 # include "wolf/field.h"
 # include "wolf/game.h"
+# include "wolf/hero.h"
 
 #endif

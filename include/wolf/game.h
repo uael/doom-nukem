@@ -16,6 +16,7 @@
 # include <SDL2/SDL.h>
 
 # include "field.h"
+# include "hero.h"
 
 typedef struct		s_wl
 {
@@ -25,6 +26,7 @@ typedef struct		s_wl
 	int				width;
 	int				height;
 	t_field			field;
+	t_hero			hero;
 }					t_wl;
 
 extern void			wl_init(t_wl *wl, int x, int y);
