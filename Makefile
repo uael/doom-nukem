@@ -10,31 +10,52 @@
 #                                                                              #
 # **************************************************************************** #
 
+NAME = wolf3d
+
+.SILENT:
+.DEFAULT_GOAL := $(NAME)
+.PHONY: clean conf dev fclean install re reconf san
+
 BUILD_TYPE ?= Release
-BUILD_DIR = build/$(BUILD_TYPE)
+BUILD_DIR ?= build/$(BUILD_TYPE)
 BUILD_PROJ_DIR = $(BUILD_DIR)/CMakeFiles
 
 CMAKE ?= cmake
 CMAKE_FLAGS += -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 CMAKE_G_FLAGS ?= -j8
 
-.DEFAULT_GOAL := all
-.SILENT:
-.PHONY: clean config fclean install re
+ifeq (1,$(VERBOSE))
+  CMAKE_FLAGS += -DCMAKE_VERBOSE_MAKEFILE:BOOL=ON
+  CMAKE_G_FLAGS += VERBOSE=1
+endif
 
-$(BUILD_DIR) config:
-	mkdir -p $(BUILD_DIR); cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_FLAGS) $(CURDIR)
+$(BUILD_DIR) conf:
+	mkdir -p $(BUILD_DIR); cd $(BUILD_DIR); $(CMAKE) $(CMAKE_FLAGS) $(CURDIR)
+
+reconf: fclean conf
+
+dev:
+	$(MAKE) BUILD_TYPE=Debug
+
+san:
+	$(MAKE) BUILD_TYPE=San
 
 clean:
-	[ -d $(BUILD_PROJ_DIR) ] && find $(BUILD_PROJ_DIR) -name "*.o" -delete
+	$(RM) -rf $(BUILD_PROJ_DIR)
 
-fclean:
-	[ -d $(BUILD_DIR) ] && find $(BUILD_DIR) -name "*.o" -delete
+fclean: clean
+	$(RM) -f wolf3d*
 
-mrproper:
-	rm -rf $(BUILD_DIR)
+mrproper: fclean
+	$(RM) -rf build
 
 re: fclean all
 
-%: $(BUILD_DIR)
+re_san:
+	$(MAKE) BUILD_TYPE=San re
+
+re_dev:
+	$(MAKE) BUILD_TYPE=Debug re
+
+$(NAME) all: $(BUILD_DIR)
 	$(CMAKE) --build $(BUILD_DIR) --target $@ -- $(CMAKE_G_FLAGS)

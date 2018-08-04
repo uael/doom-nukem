@@ -1,58 +1,81 @@
-cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    CMakeLists.txt                                     :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#              #
+#    Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
 
-set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake")
+cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
+project(wolf3d VERSION 0.0.1 LANGUAGES C)
+
+## ************************************************************************** ##
+# Build types
+##
 set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "San")
 
-set(CMAKE_C_STANDARD 99)
-set(BUILD_SHARED_LIBS OFF)
+## ************************************************************************** ##
+# Options
+##
 
-project(wolf3d C)
 
+## ************************************************************************** ##
+# Dependencies
+##
+add_subdirectory(lib)
+set(__DEPS debug libft)
 find_package(SDL2 REQUIRED)
 link_directories(${SDL2_LIBRARY_DIRS})
-
-set(wolf3d_INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
-set(wolf3d_SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
-
-set(wolf3d_SRCS
-	${wolf3d_SRC_DIR}/display.c
-	${wolf3d_SRC_DIR}/field.c
-	${wolf3d_SRC_DIR}/game.c
-	${wolf3d_SRC_DIR}/main.c src/hero.c)
-file(GLOB_RECURSE wolf3d_HDRS ${wolf3d_HDRS} ${wolf3d_INC_DIR}/wolf/*.h)
-set(wolf3d_HDR ${wolf3d_INC_DIR}/wolf.h include/wolf/hero.h)
-
-add_subdirectory(lib)
-add_executable(wolf3d ${wolf3d_SRCS} ${wolf3d_HDRS} ${wolf3d_HDR})
-target_include_directories(wolf3d PUBLIC ${wolf3d_INC_DIR})
-target_link_libraries(wolf3d PUBLIC ft ftx ${SDL2_LIBRARY})
-add_dependencies(wolf3d ft ftx)
-target_compile_options(wolf3d PUBLIC -Wall -Werror -Wextra -ansi)
-
-set_target_properties(wolf3d PROPERTIES OUTPUT_NAME "wolf3d")
-set_target_properties(wolf3d PROPERTIES OUTPUT_NAME_DEBUG "wolf3d.dev")
-set_target_properties(wolf3d PROPERTIES OUTPUT_NAME_SAN "wolf3d.san")
-set_target_properties(wolf3d PROPERTIES RUNTIME_OUTPUT_DIRECTORY
-	${CMAKE_CURRENT_LIST_DIR})
-
+set(__DEPS ${__DEPS} ${SDL2_LIBRARY})
 if (APPLE)
 	include_directories("/System/Library/Frameworks")
 	find_library(COCOA_LIBRARIES Cocoa)
 	find_library(IOKIT_LIBRARIES IOkit)
 	find_library(COREVIDEO_LIBRARIES CoreVideo)
-	target_link_libraries(wolf3d PUBLIC
-		"-framework AppKit" "-framework OpenGL"
-		"-framework IOKit" "-framework CoreVideo")
+	set(__DEPS ${__DEPS} "-framework AppKit" "-framework OpenGL")
+	set(__DEPS ${__DEPS} "-framework IOKit" "-framework CoreVideo")
 endif ()
 
-set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g3")
+## ************************************************************************** ##
+# Project directories definition
+##
+set(__INC_DIR ${CMAKE_CURRENT_LIST_DIR}/include)
+set(__SRC_DIR ${CMAKE_CURRENT_LIST_DIR}/src)
+
+## ************************************************************************** ##
+# Target
+##
+add_executable(wolf3d
+	${__SRC_DIR}/main.c)
+add_dependencies(wolf3d libft)
+
+set_target_properties(wolf3d PROPERTIES
+	C_STANDARD 90
+	OUTPUT_NAME "wolf3d"
+	OUTPUT_NAME_DEBUG "wolf3d.dev"
+	OUTPUT_NAME_SAN "wolf3d.san"
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+	ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+
+target_include_directories(wolf3d PRIVATE ${__SRC_DIR} PUBLIC ${__INC_DIR})
+target_link_libraries(wolf3d
+	PUBLIC ${__DEPS}
+	PRIVATE
+		$<$<CONFIG:San>:-fsanitize=address>
+		$<$<CONFIG:San>:-fno-omit-frame-pointer>)
+target_compile_options(wolf3d
+	PRIVATE
+		-Wall -Werror -Wextra
+		-ansi -fomit-frame-pointer
+		-Wno-missing-field-initializers
+		$<$<CONFIG:Debug>:-g3 -O0>
+		$<$<CONFIG:San>:-g3 -O0 -fsanitize=address>)
+
 if (CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
 	string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
 endif ()
-if (CMAKE_BUILD_TYPE MATCHES San)
-	set_target_properties(wolf3d PROPERTIES COMPILE_FLAGS "-fsanitize=address")
-	set_target_properties(wolf3d PROPERTIES LINK_FLAGS "-fsanitize=address")
-endif ()
-
-install(FILES ${wolf3d_HDRS} DESTINATION include/wolf3d)
-install(FILES ${wolf3d_HDR} DESTINATION include)

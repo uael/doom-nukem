@@ -15,23 +15,4 @@
 
 # include <SDL2/SDL.h>
 
-# include "field.h"
-# include "hero.h"
-
-typedef struct		s_wl
-{
-	SDL_Window		*window;
-	SDL_Renderer	*renderer;
-	SDL_Texture		*texture;
-	int				width;
-	int				height;
-	t_field			field;
-	t_hero			hero;
-}					t_wl;
-
-extern void			wl_init(t_wl *wl, int x, int y);
-extern int			wl_exit(t_wl *wl, int ecode, char const *msg, ...);
-extern int			wl_isdone(t_wl *wl);
-extern void			wl_handle(t_wl *wl, uint8_t const *keyboard);
-
 #endif

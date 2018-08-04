@@ -14,17 +14,7 @@
 
 int	main(int ac, char *av[])
 {
-	t_wl			wl;
-	uint8_t const	*keyboard;
-
-	(void) ac;
-	(void) av;
-	wl_init(&wl, 1920, 1080);
-    init_hero(&wl.hero, 0.8f);
-	while(!wl_isdone(&wl))
-	{
-		keyboard = SDL_GetKeyboardState(NULL);
-		wl_handle(&wl, keyboard);
-	}
+	(void)ac;
+	(void)av;
 	return (EXIT_FAILURE);
 }
