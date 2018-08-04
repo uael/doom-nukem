@@ -39,6 +39,8 @@ if (APPLE)
 	set(__DEPS ${__DEPS} "-framework AppKit" "-framework OpenGL")
 	set(__DEPS ${__DEPS} "-framework IOKit" "-framework CoreVideo")
 endif ()
+find_package(Threads REQUIRED)
+set(__DEPS ${__DEPS} Threads::Threads)
 
 ## ************************************************************************** ##
 # Project directories definition
