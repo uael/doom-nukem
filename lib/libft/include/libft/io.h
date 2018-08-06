@@ -14,7 +14,11 @@
 # define LIBFT_IO_H
 
 # include <stdarg.h>
-# include <unistd.h>
+# ifdef _MSC_VER
+#   include <io.h>
+# else
+#   include <unistd.h>
+# endif
 # include <fcntl.h>
 
 # include "int.h"
@@ -30,6 +34,16 @@
 #  else
 #   define FT_PAGE_SIZE 4096
 #  endif
+# endif
+
+# ifndef STDIN_FILENO
+#  define STDIN_FILENO 0
+# endif
+# ifndef STDOUT_FILENO
+#  define STDOUT_FILENO 1
+# endif
+# ifndef STDERR_FILENO
+#  define STDERR_FILENO 2
 # endif
 
 struct s_stream;

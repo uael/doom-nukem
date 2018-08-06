@@ -34,7 +34,7 @@ static ssize_t	suout(t_stream *s, t_fmt *f, t_varg arg)
 	size_t	i;
 	int		l;
 	wchar_t	*ws;
-	char	mb[MB_CUR_MAX];
+	char	mb[8];
 
 	iofmt_pad(s, (t_pad){' ', f->w, (size_t)f->p, f->fl});
 	iofmt_pad(s, (t_pad){'0', f->w, (size_t)f->p, f->fl ^ ZERO_PAD});
@@ -56,7 +56,7 @@ ssize_t			iofmt_fmtsu(t_stream *s, t_fmt *f, t_varg arg)
 	size_t	i;
 	int		l;
 	wchar_t	*ws;
-	char	mb[MB_CUR_MAX];
+	char	mb[8];
 
 	if (!(ws = arg.p))
 		return (iofmt_fmts(s, f, arg));

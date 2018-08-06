@@ -36,7 +36,7 @@ static int wl_quit(t_game *game)
 	game->render ? SDL_DestroySemaphore(game->render) : 0;
 	game->win ? SDL_DestroyWindow(game->win) : 0;
 	if ((error = SDL_GetError()) && *error)
-		ft_fprintf(g_stderr, "wolf3d: %s\n", error);
+		ft_dprintf(2, "wolf3d: %s\n", error);
 	SDL_Quit();
 	exit(error && *error ? 1 : 0);
 }
@@ -48,7 +48,7 @@ int calculator(t_game *game)
 		SDL_SemWait(game->calculate);
 		if (!game->running)
 			break;
-		ft_printf("======> calculate !\n");
+		ft_dprintf(2, "======> calculate !\n");
 	}
 	return 0;
 }
@@ -61,7 +61,7 @@ int renderer(t_game *game)
 		SDL_SemWait(game->render);
 		if (!game->running)
 			break;
-		ft_printf("======> render !\n");
+		ft_dprintf(2, "======> render !\n");
 	}
 	return 0;
 }
@@ -93,8 +93,7 @@ static t_handler *g_keydown[UINT8_MAX] = {
 	[SDLK_r] = on_r,
 };
 
-static t_handler *g_keyup[UINT8_MAX] = {
-};
+static t_handler *g_keyup[UINT8_MAX];
 
 int game_loop(t_game *game)
 {
@@ -112,12 +111,14 @@ int game_loop(t_game *game)
 	return wl_quit(game);
 }
 
+#undef main
 int	main(int ac, char *av[])
 {
 	t_game game;
 
 	(void)ac;
 	(void)av;
+	ft_dprintf(2, "coucou\n");
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 		return wl_quit(&game);
 	game.running = TRUE;

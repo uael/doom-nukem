@@ -10,11 +10,9 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-
 #include "internal.h"
 
-static uint8_t	g_buf[0];
+static uint8_t	g_buf[1];
 static t_stream	g_f = {
 	.buf = g_buf,
 	.buf_size = 0,

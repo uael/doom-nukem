@@ -34,7 +34,7 @@ inline int				ft_ifsopen(t_ifs *self, char const *filename)
 {
 	int	fd;
 
-	if ((fd = open(filename, O_RDONLY, S_IRUSR | S_IWUSR)) < 0)
+	if ((fd = open(filename, O_RDONLY)) < 0)
 		return (WUT);
 	ft_ifsctor(self, fd);
 	return (YEP);

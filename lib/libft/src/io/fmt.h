@@ -56,10 +56,10 @@ typedef struct	s_pad
 	int			flags;
 }				t_pad;
 
-int				iofmt_parse(t_fmt *f, char **sp, va_list ap);
-int				iofmt_poptype(t_varg *arg, int *type, char **s, va_list ap);
-size_t			iofmt_out(t_stream *f, const char *s, size_t l);
-void			iofmt_pad(t_stream *f, t_pad pad);
-int				iofmt_eval(int t, t_fmt f, t_varg a, t_stream *s);
+extern int		iofmt_parse(t_fmt *f, char **sp, va_list ap);
+extern int		iofmt_poptype(t_varg *arg, int *type, char **s, va_list ap);
+extern size_t	iofmt_out(t_stream *f, const char *s, size_t l);
+extern void		iofmt_pad(t_stream *f, t_pad pad);
+extern int		iofmt_eval(int t, t_fmt f, t_varg a, t_stream *s);
 
 #endif

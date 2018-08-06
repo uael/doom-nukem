@@ -10,8 +10,6 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-
 #include "internal.h"
 
 static uint8_t	g_buf[FT_BUFSIZ];

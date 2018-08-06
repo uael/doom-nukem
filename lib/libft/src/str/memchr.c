@@ -15,7 +15,7 @@
 inline void	*ft_memchr(void const *ptr, int c, size_t n)
 {
 	while (n--)
-		if (*(uint8_t*)ptr++ == (uint8_t)c)
-			return ((void *)ptr - 1);
+		if (*((uint8_t*)ptr)++ == (uint8_t)c)
+			return ((char *)ptr - 1);
 	return (NULL);
 }

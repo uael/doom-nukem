@@ -14,49 +14,19 @@
 
 static inline char	hswap(t_map *self, char *key, char *val, uint32_t i)
 {
-	char tmp[self->ksz > self->vsz ? self->ksz : self->vsz];
-
-	if (i < self->cap && !(self->bucks[i] & BUCKET_BOTH))
-	{
-		ft_memcpy(tmp, ((char *)self->keys + (i * self->ksz)), self->ksz);
-		ft_memcpy(((char *)self->keys + (i * self->ksz)), key, self->ksz);
-		ft_memcpy(key, tmp, self->ksz);
-		ft_memcpy(tmp, ((char *)self->vals + (i * self->vsz)), self->vsz);
-		ft_memcpy(((char *)self->vals + (i * self->vsz)), val, self->vsz);
-		ft_memcpy(val, tmp, self->vsz);
-		self->bucks[i] |= BUCKET_DELETED;
-	}
-	else
-	{
-		ft_memcpy((char *)self->keys + (i * self->ksz), key, self->ksz);
-		ft_memcpy((char *)self->vals + (i * self->vsz), val, self->vsz);
-		return (1);
-	}
+	(void)self;
+	(void)key;
+	(void)val;
+	(void)i;
 	return (0);
 }
 
 static inline void	reh1(t_map *self, uint32_t sz, uint8_t *bucks, uint32_t j)
 {
-	char		key[self->ksz];
-	char		val[self->vsz];
-	uint32_t	k;
-	uint32_t	i;
-	uint32_t	step;
-
-	step = 0;
-	ft_memcpy(key, ((char *)self->keys + (j * self->ksz)), self->ksz);
-	ft_memcpy(val, ((char *)self->vals + (j * self->vsz)), self->vsz);
-	self->bucks[j] |= BUCKET_DELETED;
-	while (1)
-	{
-		k = self->hasher.hash(*(char **)key);
-		i = k & (sz - 1);
-		while ((bucks[i] & BUCKET_EMPTY) != BUCKET_EMPTY)
-			i = (i + (++step)) & (sz - 1);
-		bucks[i] &= ~BUCKET_EMPTY;
-		if (hswap(self, key, val, i))
-			break ;
-	}
+	(void)self;
+	(void)sz;
+	(void)bucks;
+	(void)j;
 }
 
 static inline void	reh(t_map *self, uint32_t sz, uint8_t *bucks)

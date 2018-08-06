@@ -90,15 +90,6 @@ add_library(libft
 	${__SRC_DIR}/fs/fs.c
 	${__SRC_DIR}/fs/fs_2.c
 	${__SRC_DIR}/fs/fs_3.c
-	${__SRC_DIR}/fs/fs_4.c
-	${__SRC_DIR}/glob/glob_util
-	${__SRC_DIR}/glob/glob_brace.c
-	${__SRC_DIR}/glob/glob_climb_tree.c
-	${__SRC_DIR}/glob/glob_climb_tree.h
-	${__SRC_DIR}/glob/glob_match.c
-	${__SRC_DIR}/glob/glob_match.h
-	${__SRC_DIR}/glob/globux.c
-	${__SRC_DIR}/glob/globux.h
 	${__SRC_DIR}/hash/hash.c
 	${__SRC_DIR}/hash/hash_2.c
 	${__SRC_DIR}/int/len.c
@@ -157,7 +148,6 @@ add_library(libft
 	${__SRC_DIR}/math/umax.c
 	${__SRC_DIR}/math/umin.c
 	${__SRC_DIR}/mem/alloc.c
-	${__SRC_DIR}/sort/ft_shellsort.c
 	${__SRC_DIR}/str/bzero.c
 	${__SRC_DIR}/str/memccpy.c
 	${__SRC_DIR}/str/memchr.c
@@ -206,19 +196,23 @@ set_target_properties(libft PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
 target_include_directories(libft PRIVATE ${__SRC_DIR} PUBLIC ${__INC_DIR})
-target_link_libraries(libft
-	PUBLIC ${__DEPS}
-	PRIVATE
-		$<$<CONFIG:San>:-fsanitize=address>
-		$<$<CONFIG:San>:-fno-omit-frame-pointer>)
-target_compile_options(libft
-	PRIVATE
-		-Wall -Werror -Wextra
-		-ansi -fomit-frame-pointer
-		-Wno-missing-field-initializers
-    -Wno-cast-function-type
-		$<$<CONFIG:Debug>:-g3 -O0>
-		$<$<CONFIG:San>:-g3 -O0 -fsanitize=address>)
+if (MSVC)
+	target_compile_definitions(libft PRIVATE _CRT_SECURE_NO_WARNINGS)
+	target_compile_options(libft PRIVATE /Oy /W3)
+else ()
+	target_link_libraries(libft
+		PUBLIC ${__DEPS}
+		PRIVATE
+			$<$<CONFIG:San>:-fsanitize=address>
+			$<$<CONFIG:San>:-fno-omit-frame-pointer>)
+	target_compile_options(libft
+		PRIVATE
+			-Wall -Werror -Wextra
+			-ansi -fomit-frame-pointer
+			-Wno-missing-field-initializers
+			$<$<CONFIG:Debug>:-g3 -O0>
+			$<$<CONFIG:San>:-g3 -O0 -fsanitize=address>)
+endif ()
 
 if (CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
 	string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
