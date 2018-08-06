@@ -23,7 +23,7 @@ typedef struct	s_game
 	SDL_Window	*win;
 }				t_game;
 
-static int wl_quit(t_game *game)
+int game_quit(t_game *game)
 {
 	const char *error;
 
@@ -41,7 +41,17 @@ static int wl_quit(t_game *game)
 	exit(error && *error ? 1 : 0);
 }
 
-int calculator(t_game *game)
+void game_render(t_game *game)
+{
+	SDL_SemPost(game->render);
+}
+
+void game_calculate(t_game *game)
+{
+	SDL_SemPost(game->calculate);
+}
+
+int game_calculator(t_game *game)
 {
 	while (1)
 	{
@@ -49,12 +59,13 @@ int calculator(t_game *game)
 		if (!game->running)
 			break;
 		ft_dprintf(2, "======> calculate !\n");
+		game_render(game);
 	}
 	return 0;
 }
 
 
-int renderer(t_game *game)
+int game_renderer(t_game *game)
 {
 	while (1)
 	{
@@ -72,19 +83,19 @@ void on_escape(t_game *game, SDL_Event *event)
 {
 	(void)game;
 	(void)event;
-	wl_quit(game);
+	game_quit(game);
 }
 
 void on_r(t_game *game, SDL_Event *event)
 {
 	(void)event;
-	SDL_SemPost(game->render);
+	game_render(game);
 }
 
 void on_c(t_game *game, SDL_Event *event)
 {
 	(void)event;
-	SDL_SemPost(game->calculate);
+	game_calculate(game);
 }
 
 static t_handler *g_keydown[UINT8_MAX] = {
@@ -101,14 +112,14 @@ int game_loop(t_game *game)
 
 	while (game->running && SDL_WaitEvent(&ev))
 		if (ev.type == SDL_QUIT)
-			return wl_quit(game);
+			return game_quit(game);
 		else if (ev.key.keysym.sym >= UINT8_MAX)
 			continue ;
 		else if (ev.type == SDL_KEYDOWN && g_keydown[ev.key.keysym.sym])
 			g_keydown[ev.key.keysym.sym](game, &ev);
 		else if (ev.type == SDL_KEYUP && g_keyup[ev.key.keysym.sym])
 			g_keyup[ev.key.keysym.sym](game, &ev);
-	return wl_quit(game);
+	return game_quit(game);
 }
 
 #undef main
@@ -118,20 +129,20 @@ int	main(int ac, char *av[])
 
 	(void)ac;
 	(void)av;
-	ft_dprintf(2, "coucou\n");
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
-		return wl_quit(&game);
+		return game_quit(&game);
 	game.running = TRUE;
 	if (!(game.calculate = SDL_CreateSemaphore(0)))
-		return wl_quit(&game);
-	if (!(game.renderer = SDL_CreateThread((void *)calculator, "01", &game)))
-		return wl_quit(&game);
+		return game_quit(&game);
+	if (!(game.renderer = SDL_CreateThread((void *)game_calculator, "01",
+		&game)))
+		return game_quit(&game);
 	if (!(game.render = SDL_CreateSemaphore(0)))
-		return wl_quit(&game);
-	if (!(game.renderer = SDL_CreateThread((void *)renderer, "02", &game)))
-		return wl_quit(&game);
+		return game_quit(&game);
+	if (!(game.renderer = SDL_CreateThread((void *)game_renderer, "02", &game)))
+		return game_quit(&game);
 	if (!(game.win = SDL_CreateWindow("wolf3d", SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN)))
-		return wl_quit(&game);
+		SDL_WINDOWPOS_UNDEFINED, 800, 600, SDL_WINDOW_SHOWN)))
+		return game_quit(&game);
 	return (game_loop(&game));
 }
