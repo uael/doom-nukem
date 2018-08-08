@@ -15,7 +15,7 @@
 inline void	*ft_memccpy(void *dst, void const *src, int c, size_t n)
 {
 	while (n--)
-		if ((*((uint8_t *)dst)++ = *((uint8_t *)src)++) == (uint8_t)c)
+		if ((*(uint8_t *)dst++ = *(uint8_t *)src++) == (uint8_t)c)
 			return (dst);
 	return (NULL);
 }

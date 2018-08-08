@@ -86,7 +86,7 @@ ssize_t					ft_ifsrd(t_ifs *s, void *b, size_t n)
 			return (r < 0 ? (size_t)WUT : beg - (n - r));
 		if (!(n -= r))
 			break ;
-		b ? (char *)b += r : 0;
+		b ? b += r : 0;
 		if (n < BSZ)
 		{
 			s->i = 0;

@@ -18,6 +18,6 @@ inline void	*ft_memset(void *b, int c, size_t len)
 
 	r = b;
 	while (len--)
-		*((uint8_t *)b)++ = (uint8_t)c;
+		*(uint8_t *)b++ = (uint8_t)c;
 	return (r);
 }
