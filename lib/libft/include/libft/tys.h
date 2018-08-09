@@ -26,10 +26,6 @@
 #  define FALSE 0
 # endif
 
-# ifdef _MSC_VER
-typedef int64_t ssize_t;
-# endif
-
 typedef uint8_t	t_bool;
 
 #endif
