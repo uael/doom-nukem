@@ -6,7 +6,7 @@
 #    By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#              #
-#    Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr        #
+#    Updated: 2018/08/23 14:26:07 by alucas-          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ BUILD_TYPE ?= Release
 BUILD_DIR ?= build/$(BUILD_TYPE)
 BUILD_PROJ_DIR = $(BUILD_DIR)/CMakeFiles
 
-CMAKE ?= cmake
+CMAKE ?= ~/.brew/bin/cmake
 CMAKE_FLAGS += -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
 CMAKE_G_FLAGS ?= -j8
 

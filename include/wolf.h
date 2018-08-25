@@ -14,5 +14,6 @@
 # define WOLF_H
 
 # include "wolf/game.h"
+# include "wolf/math.h"
 
 #endif
