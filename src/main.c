@@ -23,16 +23,6 @@ typedef struct	s_world
 	const char	**ceiling;
 }				t_world;
 
-typedef struct	s_me
-{
-	t_line		fov;
-	t_point		where;
-	t_point		velocity;
-	double		speed;
-	double		accel;
-	double		theta;
-}				t_me;
-
 typedef struct	s_display
 {
 	uint32_t	*pixels;
@@ -67,59 +57,6 @@ typedef struct	s_wall
 
 int game_quit(t_game *game);
 
-static void me_move(t_me *me, const char **const walling,
-					const uint8_t *key)
-{
-	t_point	last;
-
-	last = me->where;
-	if (key[SDL_SCANCODE_LEFT])
-		me->theta -= 0.1f;
-	if (key[SDL_SCANCODE_RIGHT])
-		me->theta += 0.1f;
-	if (key[SDL_SCANCODE_W] || key[SDL_SCANCODE_S] || key[SDL_SCANCODE_D]
-		|| key[SDL_SCANCODE_A])
-	{
-		const t_point ref = { 1.0f, 0.0f };
-		const t_point dir = point_turn(ref, me->theta);
-		const t_point acc = point_mul(dir, me->accel);
-		if (key[SDL_SCANCODE_W])
-			me->velocity = point_add(me->velocity, acc);
-		if (key[SDL_SCANCODE_S])
-			me->velocity = point_sub(me->velocity, acc);
-		if (key[SDL_SCANCODE_D])
-			me->velocity = point_add(me->velocity, point_rag(acc));
-		if (key[SDL_SCANCODE_A])
-			me->velocity = point_sub(me->velocity, point_rag(acc));
-	}
-	else
-		me->velocity = point_mul(me->velocity, 1.0f - me->accel / me->speed);
-	if (point_mag(me->velocity) > me->speed)
-		me->velocity = point_mul(point_unit(me->velocity), me->speed);
-	me->where = point_add(me->where, me->velocity);
-	if (point_tile(me->where, walling))
-	{
-		t_hit hit = point_cast(last, me->velocity, walling);
-
-		if (math_isfl(hit.where.x))
-		{
-			me->velocity.x = 0.0;
-			me->velocity.y *= 0.95;
-		}
-		if (math_isfl(hit.where.y))
-		{
-			me->velocity.y = 0.0;
-			me->velocity.x *= 0.95;
-		}
-		me->where = point_add(last, me->velocity);
-		if (point_tile(me->where, walling))
-		{
-			me->velocity = (t_point){ 0.0, 0.0 };
-			me->where = last;
-		}
-	}
-}
-
 static void	gpu_lock(t_gpu *gpu)
 {
 	void	*screen;
@@ -143,7 +80,7 @@ static void gpu_unlock(t_gpu *gpu)
 }
 
 static void wall_project(t_wall *wall, const int xres, const int yres,
-	const double focal, const t_point corrected)
+	const double focal, const t_v2 corrected)
 {
 	const double normal = corrected.x < 1e-2f ? 1e-2f : corrected.x;
 	const double size = 0.5f * focal * xres / normal;
@@ -192,17 +129,23 @@ int game_renderer(t_game *game)
 	gpu_lock(&game->gpu);
 	for(x = 0; x < game->gpu.width; x++)
 	{
-		const t_point dir = line_lerp(camera, x / (float) game->gpu.width);
-		const t_hit hit = point_cast(game->me->where, dir, game->world->walling);
+		const t_v2 dir = line_lerp(camera, x / (float) game->gpu.width);
+		const t_hit hit = v2_cast(game->me->where, dir, game->world->walling);
 		const t_line trace = { game->me->where, hit.where };
 
-		wall_project(&wall, game->gpu.width, game->gpu.height, game->me->fov.a.x, point_turn(point_sub(hit.where, game->me->where), -game->me->theta));
+		wall_project(&wall, game->gpu.width, game->gpu.height, game->me->fov.a.x,
+					 v2_turn(v2_sub(hit.where, game->me->where),
+							 -game->me->theta));
 		for (y = 0; y < wall.bottom; y++)
-			gpu_put(&game->gpu, x, y, color(point_tile(line_lerp(trace, -point_pcast(wall.size, game->gpu.height, y)), game->world->flooring)));
+			gpu_put(&game->gpu, x, y, color(v2_tile(
+				line_lerp(trace, -point_pcast(wall.size, game->gpu.height, y)),
+				game->world->flooring)));
 		for (y = wall.bottom; y < wall.top; y++)
 			gpu_put(&game->gpu, x, y, color(hit.tile));
 		for (y = wall.top; y < game->gpu.height; y++)
-			gpu_put(&game->gpu, x, y, color(point_tile(line_lerp(trace, +point_pcast(wall.size, game->gpu.height, y)), game->world->ceiling)));
+			gpu_put(&game->gpu, x, y, color(v2_tile(
+				line_lerp(trace, +point_pcast(wall.size, game->gpu.height, y)),
+				game->world->ceiling)));
 	}
 	gpu_unlock(&game->gpu);
 	gpu_present(&game->gpu);
@@ -265,7 +208,7 @@ int game_init(t_game *g, const t_world *world, t_me *me)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 		return -1;
-	if (gpu_init(&g->gpu, 1600, 1200))
+	if (gpu_init(&g->gpu, 1920, 1080))
 		return -1;
 	g->running = TRUE;
 	g->world = world;
@@ -317,23 +260,16 @@ static const t_world world = {
 	},
 };
 
-static t_me me = {
-	{ { 0.8, -1.0 }, { 0.8, +1.0 } },
-	{ 7, 3.5 },
-	{ 0.0, 0.0 },
-	0.10,
-	0.015,
-	0.0
-};
-
 #undef main
 int	main(int ac, char *av[])
 {
 	t_game game;
+	t_me me;
 
 	(void)ac;
 	(void)av;
 	ft_bzero(&game, sizeof(t_game));
+	me_init(&me, (t_v2){ 22.5f, 3.5f }, 0.8f);
 	if (game_init(&game, &world, &me))
 		return (game_quit(&game));
 	return (game_loop(&game));
