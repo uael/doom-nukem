@@ -35,6 +35,7 @@ typedef struct	s_line
 
 inline int		math_fl(double x);
 inline int		math_cl(double x);
+inline int		math_isfl(double x);
 inline t_point	point_turn(t_point a, double t);
 inline t_point	point_rag(t_point a);
 inline t_point	point_sub(t_point a, t_point b);

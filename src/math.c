@@ -20,7 +20,12 @@ inline int		math_fl(const double x)
 
 inline int		math_cl(const double x)
 {
-	return (int) x + (x > (int) x);
+	return ((int)x + (x > (int)x));
+}
+
+inline int		math_isfl(double x)
+{
+	return (fabs((int)x - x) < 0.01);
 }
 
 inline t_point	point_turn(const t_point a, const double t)
@@ -121,8 +126,8 @@ inline t_hit	point_cast(const t_point where, const t_point direction, const char
 	t_point dy = { 0.0f, dc.y };
 	t_point test = point_add(ray, point_mag(point_sub(hor, ver)) < 1e-3f ? dc :
 		math_dec(ray.x) == 0.0f ? dx : dy);
-	const t_hit t_hit = { point_tile(test, walling), ray };
-	return (t_hit.tile ? t_hit : point_cast(ray, direction, walling));
+	const t_hit hit = { point_tile(test, walling), ray };
+	return (hit.tile ? hit : point_cast(ray, direction, walling));
 }
 
 inline double	point_pcast(const double size, const int yres, const int y)

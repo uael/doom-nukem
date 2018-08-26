@@ -40,6 +40,8 @@ if (APPLE)
   find_library(COREVIDEO_LIBRARIES CoreVideo)
   set(__DEPS ${__DEPS} "-framework AppKit" "-framework OpenGL")
   set(__DEPS ${__DEPS} "-framework IOKit" "-framework CoreVideo")
+elseif (UNIX)
+  set(__DEPS ${__DEPS} "m")
 endif ()
 find_package(Threads REQUIRED)
 set(__DEPS ${__DEPS} Threads::Threads)
@@ -84,6 +86,7 @@ macro(add_main NAME)
         -Wall -Werror -Wextra
         -ansi -fomit-frame-pointer
         -Wno-missing-field-initializers
+        $<$<CONFIG:Release>:-O3>
         $<$<CONFIG:Debug>:-g3 -O0>
         $<$<CONFIG:San>:-g3 -O0 -fsanitize=address>)
   endif ()
@@ -92,7 +95,3 @@ endmacro()
 add_main(wolf3d
   ${__SRC_DIR}/math.c
   ${__SRC_DIR}/main.c)
-
-if (CMAKE_C_FLAGS_RELEASE MATCHES "-O3")
-  string(REPLACE "-O3" "-O2" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
-endif ()

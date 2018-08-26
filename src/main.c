@@ -12,6 +12,7 @@
 
 #include <wolf.h>
 #include <libft.h>
+#include <stdio.h>
 
 typedef struct	s_world
 {
@@ -22,7 +23,7 @@ typedef struct	s_world
 	const char	**ceiling;
 }				t_world;
 
-typedef struct	s_hero
+typedef struct	s_me
 {
 	t_line		fov;
 	t_point		where;
@@ -30,7 +31,13 @@ typedef struct	s_hero
 	double		speed;
 	double		accel;
 	double		theta;
-}				t_hero;
+}				t_me;
+
+typedef struct	s_display
+{
+	uint32_t	*pixels;
+	int			width;
+}				t_display;
 
 typedef struct	s_gpu
 {
@@ -39,6 +46,7 @@ typedef struct	s_gpu
 	SDL_Renderer	*renderer;
 	int				width;
 	int				height;
+	t_display		display;
 }				t_gpu;
 
 typedef struct	s_game
@@ -46,15 +54,9 @@ typedef struct	s_game
 	t_gpu			gpu;
 	t_bool			running;
 	const t_world	*world;
-	t_hero			*hero;
+	t_me			*me;
 	const uint8_t	*key;
 }				t_game;
-
-typedef struct	s_display
-{
-	uint32_t	*pixels;
-	int			width;
-}				t_display;
 
 typedef struct	s_wall
 {
@@ -65,104 +67,83 @@ typedef struct	s_wall
 
 int game_quit(t_game *game);
 
-# define LOOKING_RIGHT(angle) ((angle) < M_PI_2 || (angle) > 3 * M_PI_2)
-# define LOOKING_LEFT(angle) (!LOOKING_RIGHT(angle))
-# define LOOKING_DOWN(angle) ((angle) > M_PI)
-# define LOOKING_UP(angle) (!LOOKING_DOWN(angle))
-# define LOOKING_VERT(angle) (angle == M_PI_2 || angle == 3 * M_PI_2)
-# define LOOKING_HORI(angle) (!angle || angle == M_PI || angle == 2 * M_PI)
-
-# define MIN_WALL_DIST 0.02
-
-static void hero_move(t_hero *hero, const char **const walling,
-					  const uint8_t* key)
+static void me_move(t_me *me, const char **const walling,
+					const uint8_t *key)
 {
 	t_point	last;
-	t_point	zero;
 
-	last = hero->where;
-	zero = (t_point){ 0.0, 0.0 };
+	last = me->where;
 	if (key[SDL_SCANCODE_LEFT])
-		hero->theta -= 0.1f;
+		me->theta -= 0.1f;
 	if (key[SDL_SCANCODE_RIGHT])
-		hero->theta += 0.1f;
+		me->theta += 0.1f;
 	if (key[SDL_SCANCODE_W] || key[SDL_SCANCODE_S] || key[SDL_SCANCODE_D]
 		|| key[SDL_SCANCODE_A])
 	{
-		const t_point reference = { 1.0f, 0.0f };
-		const t_point direction = point_turn(reference, hero->theta);
-		const t_point accel = point_mul(direction, hero->accel);
-		if (key[SDL_SCANCODE_W]) hero->velocity = point_add(hero->velocity, accel);
-		if (key[SDL_SCANCODE_S]) hero->velocity = point_sub(hero->velocity, accel);
-		if (key[SDL_SCANCODE_D]) hero->velocity = point_add(hero->velocity, point_rag(accel));
-		if (key[SDL_SCANCODE_A]) hero->velocity = point_sub(hero->velocity, point_rag(accel));
+		const t_point ref = { 1.0f, 0.0f };
+		const t_point dir = point_turn(ref, me->theta);
+		const t_point acc = point_mul(dir, me->accel);
+		if (key[SDL_SCANCODE_W])
+			me->velocity = point_add(me->velocity, acc);
+		if (key[SDL_SCANCODE_S])
+			me->velocity = point_sub(me->velocity, acc);
+		if (key[SDL_SCANCODE_D])
+			me->velocity = point_add(me->velocity, point_rag(acc));
+		if (key[SDL_SCANCODE_A])
+			me->velocity = point_sub(me->velocity, point_rag(acc));
 	}
 	else
-		hero->velocity = point_mul(hero->velocity, 1.0f - hero->accel / hero->speed);
-	if (point_mag(hero->velocity) > hero->speed)
-		hero->velocity = point_mul(point_unit(hero->velocity), hero->speed);
-	hero->where = point_add(hero->where, hero->velocity);
-	if (point_tile(point_add(hero->where, (t_point){ 0.02, 0.02 }), walling))
+		me->velocity = point_mul(me->velocity, 1.0f - me->accel / me->speed);
+	if (point_mag(me->velocity) > me->speed)
+		me->velocity = point_mul(point_unit(me->velocity), me->speed);
+	me->where = point_add(me->where, me->velocity);
+	if (point_tile(me->where, walling))
 	{
-		if (hero->velocity.x > 0.001)
+		t_hit hit = point_cast(last, me->velocity, walling);
+
+		if (math_isfl(hit.where.x))
 		{
-			printf("RIGHT\n");
-			if (point_tile((t_point){ hero->where.x + MIN_WALL_DIST,
-									  hero->where.y }, walling))
-				hero->where.x -= MIN_WALL_DIST;
+			me->velocity.x = 0.0;
+			me->velocity.y *= 0.95;
 		}
-		else
+		if (math_isfl(hit.where.y))
 		{
-			printf("LEFT\n");
-			if (point_tile((t_point){ hero->where.x - MIN_WALL_DIST,
-									  hero->where.y }, walling))
-				hero->where.x += MIN_WALL_DIST;
+			me->velocity.y = 0.0;
+			me->velocity.x *= 0.95;
 		}
-		if (hero->velocity.y > 0.001)
+		me->where = point_add(last, me->velocity);
+		if (point_tile(me->where, walling))
 		{
-			printf("DOWN\n");
-			if (point_tile((t_point){ hero->where.x,
-									  hero->where.y + MIN_WALL_DIST }, walling))
-				hero->where.y -= MIN_WALL_DIST;
-		}
-		else
-		{
-			printf("UP\n");
-			if (point_tile((t_point){ hero->where.x,
-									  hero->where.y - MIN_WALL_DIST }, walling))
-				hero->where.y += MIN_WALL_DIST;
-		}
-		if (point_tile(hero->where, walling))
-		{
-			hero->where = last;
-			hero->velocity = zero;
+			me->velocity = (t_point){ 0.0, 0.0 };
+			me->where = last;
 		}
 	}
 }
 
-static void	display_lock(t_display *display, const t_gpu *gpu)
+static void	gpu_lock(t_gpu *gpu)
 {
 	void	*screen;
 	int		pitch;
 
 	SDL_LockTexture(gpu->texture, NULL, &screen, &pitch);
-	display->pixels = (uint32_t*) screen;
-	display->width = pitch / (int) sizeof(uint32_t);
+	gpu->display.pixels = (uint32_t*) screen;
+	gpu->display.width = pitch / (int) sizeof(uint32_t);
 }
 
-static void display_put(t_display *display, const int x, const int y, const uint32_t pixel)
+static void gpu_put(t_gpu *gpu, const int x, const int y,
+					const uint32_t pixel)
 {
-	display->pixels[y + x * display->width] = pixel;
+	gpu->display.pixels[y + x * gpu->display.width] = pixel;
 }
 
 // Unlocks the gpu, making the pointer to video memory ready for presentation
-static void display_unlock(t_gpu *gpu)
+static void gpu_unlock(t_gpu *gpu)
 {
 	SDL_UnlockTexture(gpu->texture);
 }
 
 static void wall_project(t_wall *wall, const int xres, const int yres,
-	const float focal, const t_point corrected)
+	const double focal, const t_point corrected)
 {
 	const double normal = corrected.x < 1e-2f ? 1e-2f : corrected.x;
 	const double size = 0.5f * focal * xres / normal;
@@ -176,7 +157,7 @@ static void wall_project(t_wall *wall, const int xres, const int yres,
 
 // Presents the software gpu to the window.
 // Calls the real GPU to rotate texture back 90 degrees before presenting.
-static void present(const t_gpu *gpu)
+static void gpu_present(const t_gpu *gpu)
 {
 	const SDL_Rect dst = {
 		(gpu->width - gpu->height) / 2,
@@ -203,51 +184,28 @@ int game_renderer(t_game *game)
 	int x;
 	int y;
 	t_line camera;
-	t_display display;
 	t_wall wall;
 
-
-
 	game->key = SDL_GetKeyboardState(NULL);
-	hero_move(game->hero, game->world->walling, game->key);
-	/*dprintf(2, "Hero {\n"
-		"  { { %f, %f }, { %f, %f } },\n"
-		"  { %f, %f},\n"
-		"  { %f, %f},\n"
-		"  %f,\n"
-		"  %f,\n"
-		"  %f,\n"
-		"}\n",
-		game->hero->fov.a.x, game->hero->fov.a.y,
-		game->hero->fov.b.x, game->hero->fov.b.y,
-		game->hero->where.x, game->hero->where.y,
-		game->hero->velocity.x, game->hero->velocity.y,
-		game->hero->speed,
-		game->hero->accel,
-		game->hero->theta);*/
-	camera = line_rotate(game->hero->fov, game->hero->theta);
-	display_lock(&display, &game->gpu);
+	me_move(game->me, game->world->walling, game->key);
+	camera = line_rotate(game->me->fov, game->me->theta);
+	gpu_lock(&game->gpu);
 	for(x = 0; x < game->gpu.width; x++)
 	{
-		const t_point direction = line_lerp(camera, x / (float) game->gpu.width);
-		const t_hit hit = point_cast(game->hero->where, direction, game->world->walling);
-		const t_point ray = point_sub(hit.where, game->hero->where);
-		const t_line trace = { game->hero->where, hit.where };
-		const t_point corrected = point_turn(ray, -game->hero->theta);
-		wall_project(&wall, game->gpu.width, game->gpu.height, game->hero->fov.a.x, corrected);
-		// Renders flooring.
-		for(y = 0; y < wall.bottom; y++)
-			display_put(&display, x, y, color(
-				point_tile(line_lerp(trace, -point_pcast(wall.size, game->gpu.height, y)), game->world->flooring)));
-		// Renders wall.
-		for(y = wall.bottom; y < wall.top; y++)
-			display_put(&display, x, y, color(hit.tile));
-		// Renders ceiling.
-		for(y = wall.top; y < game->gpu.height; y++)
-			display_put(&display, x, y, color(point_tile(line_lerp(trace, +point_pcast(wall.size, game->gpu.height, y)), game->world->ceiling)));
+		const t_point dir = line_lerp(camera, x / (float) game->gpu.width);
+		const t_hit hit = point_cast(game->me->where, dir, game->world->walling);
+		const t_line trace = { game->me->where, hit.where };
+
+		wall_project(&wall, game->gpu.width, game->gpu.height, game->me->fov.a.x, point_turn(point_sub(hit.where, game->me->where), -game->me->theta));
+		for (y = 0; y < wall.bottom; y++)
+			gpu_put(&game->gpu, x, y, color(point_tile(line_lerp(trace, -point_pcast(wall.size, game->gpu.height, y)), game->world->flooring)));
+		for (y = wall.bottom; y < wall.top; y++)
+			gpu_put(&game->gpu, x, y, color(hit.tile));
+		for (y = wall.top; y < game->gpu.height; y++)
+			gpu_put(&game->gpu, x, y, color(point_tile(line_lerp(trace, +point_pcast(wall.size, game->gpu.height, y)), game->world->ceiling)));
 	}
-	display_unlock(&game->gpu);
-	present(&game->gpu);
+	gpu_unlock(&game->gpu);
+	gpu_present(&game->gpu);
 
 
 	return 0;
@@ -255,10 +213,10 @@ int game_renderer(t_game *game)
 
 int game_loop(t_game *game)
 {
-	SDL_Event e;
-	int t0;
-	int t1;
-	int ms;
+	SDL_Event	e;
+	int			t0;
+	int			t1;
+	int			ms;
 
 	game_renderer(game);
 	while (game->running)
@@ -268,7 +226,7 @@ int game_loop(t_game *game)
 		if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE
 			|| e.key.keysym.sym == SDLK_END)
 			return (game_quit(game));
-		if (game->hero->velocity.x || game->hero->velocity.y
+		if (game->me->velocity.x || game->me->velocity.y
 			|| e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_a
 			|| e.key.keysym.sym == SDLK_s || e.key.keysym.sym == SDLK_d
 			|| e.key.keysym.sym == SDLK_RIGHT || e.key.keysym.sym == SDLK_LEFT)
@@ -277,7 +235,7 @@ int game_loop(t_game *game)
 		ms = 14 - (t1 - t0);
 		SDL_Delay((uint32_t)(ms < 0 ? 0 : ms));
 	}
-	return game_quit(game);
+	return (game_quit(game));
 }
 
 int gpu_init(t_gpu *gpu, int width, int height)
@@ -303,15 +261,15 @@ void	gpu_destroy(t_gpu *gpu)
 	gpu->texture ? SDL_DestroyTexture(gpu->texture) : 0;
 }
 
-int game_init(t_game *g, const t_world *world, t_hero *hero)
+int game_init(t_game *g, const t_world *world, t_me *me)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 		return -1;
-	if (gpu_init(&g->gpu, 800, 600))
+	if (gpu_init(&g->gpu, 1600, 1200))
 		return -1;
 	g->running = TRUE;
 	g->world = world;
-	g->hero = hero;
+	g->me = me;
 	return 0;
 }
 
@@ -359,7 +317,7 @@ static const t_world world = {
 	},
 };
 
-static t_hero hero = {
+static t_me me = {
 	{ { 0.8, -1.0 }, { 0.8, +1.0 } },
 	{ 7, 3.5 },
 	{ 0.0, 0.0 },
@@ -376,7 +334,7 @@ int	main(int ac, char *av[])
 	(void)ac;
 	(void)av;
 	ft_bzero(&game, sizeof(t_game));
-	if (game_init(&game, &world, &hero))
+	if (game_init(&game, &world, &me))
 		return (game_quit(&game));
 	return (game_loop(&game));
 }
