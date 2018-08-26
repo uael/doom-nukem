@@ -13,7 +13,7 @@
 #ifndef WOLF_ME_H
 # define WOLF_ME_H
 
-# include "wolf/math.h"
+# include "wolf/world.h"
 
 typedef struct	s_me
 {
@@ -38,6 +38,6 @@ extern void		me_init(t_me *me, t_v2 pos, double focal);
 ** @param wall Walling data
 ** @param keys Keyboard state
 */
-extern void		me_move(t_me *me, const char **wall, const uint8_t *keys);
+extern void		me_move(t_me *me, t_world *world, const uint8_t *keys);
 
 #endif

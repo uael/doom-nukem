@@ -93,6 +93,7 @@ macro(add_main NAME)
 endmacro()
 
 add_main(wolf3d
+  ${__SRC_DIR}/world.c
   ${__SRC_DIR}/me.c
   ${__SRC_DIR}/math.c
   ${__SRC_DIR}/main.c)

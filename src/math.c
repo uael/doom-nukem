@@ -83,26 +83,26 @@ inline t_v2	v2_unit(t_v2 a)
 	return (v2_mul(a, 1.0 / v2_mag(a)));
 }
 
-inline double	point_slope(const t_v2 a)
+inline double	v2_slope(t_v2 a)
 {
 	return (a.y / a.x);
 }
 
-inline t_v2	point_sh(const t_v2 a, const t_v2 b)
+inline t_v2	v2_sh(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
 	c.x = b.x > 0.0f ? math_fl(a.x + 1.0f) : math_cl(a.x - 1.0f);
-	c.y = point_slope(b) * (c.x - a.x) + a.y;
+	c.y = v2_slope(b) * (c.x - a.x) + a.y;
 	return (c);
 }
 
-inline t_v2	point_sv(const t_v2 a, const t_v2 b)
+inline t_v2	v2_sv(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
 	c.y = b.y > 0.0f ? math_fl(a.y + 1.0f) : math_cl(a.y - 1.0f);
-	c.x = (c.y - a.y) / point_slope(b) + a.x;
+	c.x = (c.y - a.y) / v2_slope(b) + a.x;
 	return (c);
 }
 
@@ -116,21 +116,7 @@ inline double	math_dec(const double x)
 	return (x - (int)x);
 }
 
-inline t_hit	v2_cast(t_v2 where, t_v2 direction, const char **walling)
-{
-	t_v2 hor = point_sh(where, direction);
-	t_v2 ver = point_sv(where, direction);
-	t_v2 ray = v2_mag(v2_sub(hor, where)) < v2_mag(v2_sub(ver, where)) ? hor : ver;
-	t_v2 dc = v2_mul(direction, 0.01f);
-	t_v2 dx = { dc.x, 0.0f };
-	t_v2 dy = { 0.0f, dc.y };
-	t_v2 test = v2_add(ray, v2_mag(v2_sub(hor, ver)) < 1e-3f ? dc :
-							math_dec(ray.x) == 0.0f ? dx : dy);
-	const t_hit hit = {v2_tile(test, walling), ray };
-	return (hit.tile ? hit : v2_cast(ray, direction, walling));
-}
-
-inline double	point_pcast(const double size, const int yres, const int y)
+inline double	v2_pcast(double size, int yres, int y)
 {
 	return (size / (2 * (y + 1) - yres));
 }

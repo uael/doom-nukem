@@ -14,15 +14,6 @@
 #include <libft.h>
 #include <stdio.h>
 
-typedef struct	s_world
-{
-	uint8_t		width;
-	uint8_t		height;
-	const char	**flooring;
-	const char	**walling;
-	const char	**ceiling;
-}				t_world;
-
 typedef struct	s_display
 {
 	uint32_t	*pixels;
@@ -43,7 +34,7 @@ typedef struct	s_game
 {
 	t_gpu			gpu;
 	t_bool			running;
-	const t_world	*world;
+	t_world			*world;
 	t_me			*me;
 	const uint8_t	*key;
 }				t_game;
@@ -55,7 +46,7 @@ typedef struct	s_wall
 	double		size;
 }				t_wall;
 
-int game_quit(t_game *game);
+int game_quit(t_game *game, const char *msg);
 
 static void	gpu_lock(t_gpu *gpu)
 {
@@ -124,28 +115,28 @@ int game_renderer(t_game *game)
 	t_wall wall;
 
 	game->key = SDL_GetKeyboardState(NULL);
-	me_move(game->me, game->world->walling, game->key);
+	me_move(game->me, game->world, game->key);
 	camera = line_rotate(game->me->fov, game->me->theta);
 	gpu_lock(&game->gpu);
 	for(x = 0; x < game->gpu.width; x++)
 	{
 		const t_v2 dir = line_lerp(camera, x / (float) game->gpu.width);
-		const t_hit hit = v2_cast(game->me->where, dir, game->world->walling);
+		const t_hit hit = world_cast(game->world, game->me->where, dir);
 		const t_line trace = { game->me->where, hit.where };
 
 		wall_project(&wall, game->gpu.width, game->gpu.height, game->me->fov.a.x,
 					 v2_turn(v2_sub(hit.where, game->me->where),
 							 -game->me->theta));
 		for (y = 0; y < wall.bottom; y++)
-			gpu_put(&game->gpu, x, y, color(v2_tile(
-				line_lerp(trace, -point_pcast(wall.size, game->gpu.height, y)),
-				game->world->flooring)));
+			gpu_put(&game->gpu, x, y, color(world_tile(
+				game->world, game->world->floor,
+				line_lerp(trace, -v2_pcast(wall.size, game->gpu.height, y)))));
 		for (y = wall.bottom; y < wall.top; y++)
 			gpu_put(&game->gpu, x, y, color(hit.tile));
 		for (y = wall.top; y < game->gpu.height; y++)
-			gpu_put(&game->gpu, x, y, color(v2_tile(
-				line_lerp(trace, +point_pcast(wall.size, game->gpu.height, y)),
-				game->world->ceiling)));
+			gpu_put(&game->gpu, x, y, color(world_tile(
+				game->world, game->world->ceil,
+				line_lerp(trace, +v2_pcast(wall.size, game->gpu.height, y)))));
 	}
 	gpu_unlock(&game->gpu);
 	gpu_present(&game->gpu);
@@ -168,7 +159,7 @@ int game_loop(t_game *game)
 		t0 = SDL_GetTicks();
 		if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE
 			|| e.key.keysym.sym == SDLK_END)
-			return (game_quit(game));
+			break;
 		if (game->me->velocity.x || game->me->velocity.y
 			|| e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_a
 			|| e.key.keysym.sym == SDLK_s || e.key.keysym.sym == SDLK_d
@@ -178,7 +169,7 @@ int game_loop(t_game *game)
 		ms = 14 - (t1 - t0);
 		SDL_Delay((uint32_t)(ms < 0 ? 0 : ms));
 	}
-	return (game_quit(game));
+	return (game_quit(game, NULL));
 }
 
 int gpu_init(t_gpu *gpu, int width, int height)
@@ -204,7 +195,7 @@ void	gpu_destroy(t_gpu *gpu)
 	gpu->texture ? SDL_DestroyTexture(gpu->texture) : 0;
 }
 
-int game_init(t_game *g, const t_world *world, t_me *me)
+int game_init(t_game *g, t_world *world, t_me *me)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 		return -1;
@@ -216,61 +207,35 @@ int game_init(t_game *g, const t_world *world, t_me *me)
 	return 0;
 }
 
-int game_quit(t_game *game)
+int game_quit(t_game *game, const char *msg)
 {
 	const char *error;
 
 	game->running = 0;
 	gpu_destroy(&game->gpu);
+	if (msg)
+		ft_dprintf(2, "wolf3d: %s\n", msg);
+	if (errno)
+		ft_dprintf(2, "wolf3d: %m\n");
 	if ((error = SDL_GetError()) && *error)
 		ft_dprintf(2, "wolf3d: %s\n", error);
 	SDL_Quit();
 	exit(error && *error ? 1 : 0);
 }
 
-static const t_world world = {
-	.width = 45,
-	.height= 7,
-	.ceiling = (const char*[]){
-		"111111111111111111111111111111111111111111111",
-		"122223223232232111111111111111222232232322321",
-		"122222221111232111111111111111222222211112321",
-		"122221221232323232323232323232222212212323231",
-		"122222221111232111111111111111222222211112321",
-		"122223223232232111111111111111222232232322321",
-		"111111111111111111111111111111111111111111111",
-	},
-	.walling = (const char*[]){
-		"111111111111111111111111111111111111111111111",
-		"100000000000000111111111111111000000000000001",
-		"103330001111000111111111111111033300011110001",
-		"103000000000000000000000000000030000030000001",
-		"103330001111000111111111111111033300011110001",
-		"100000000000000111111111111111000000000000001",
-		"111111111111111111111111111111111111111111111",
-	},
-	.flooring = (const char*[]){
-		"111111111111111111111111111111111111111111111",
-		"122223223232232111111111111111222232232322321",
-		"122222221111232111111111111111222222211112321",
-		"122222221232323323232323232323222222212323231",
-		"122222221111232111111111111111222222211112321",
-		"122223223232232111111111111111222232232322321",
-		"111111111111111111111111111111111111111111111",
-	},
-};
-
 #undef main
 int	main(int ac, char *av[])
 {
-	t_game game;
-	t_me me;
+	t_game	game;
+	t_world	world;
+	t_me	me;
 
-	(void)ac;
-	(void)av;
+	SDL_ClearError();
 	ft_bzero(&game, sizeof(t_game));
-	me_init(&me, (t_v2){ 22.5f, 3.5f }, 0.8f);
+	if (world_init(&world, ac, av))
+		return (game_quit(&game, "Unable to init world."));
+	me_init(&me, (t_v2){ 21.5f, 3.5f }, 0.8f);
 	if (game_init(&game, &world, &me))
-		return (game_quit(&game));
+		return (game_quit(&game, "Unable to init game."));
 	return (game_loop(&game));
 }

@@ -35,16 +35,16 @@ inline void			me_init(t_me *me, t_v2 pos, const double focal)
 **  - If we still collide, keep calm, stay in place, don't SEGFAULT..
 */
 
-static inline void collide_or_move(t_me *me, const char **const wall)
+static inline void collide_or_move(t_me *me, t_world *world)
 {
 	t_v2	last;
 	t_hit	hit;
 
 	last = me->where;
 	me->where = v2_add(me->where, me->velocity);
-	if (v2_tile(me->where, wall))
+	if (world_tile(world, world->wall, me->where))
 	{
-		hit = v2_cast(last, me->velocity, wall);
+		hit = world_cast(world, last, me->velocity);
 		if (math_isfl(hit.where.x))
 		{
 			me->velocity.x = 0.0;
@@ -56,7 +56,7 @@ static inline void collide_or_move(t_me *me, const char **const wall)
 			me->velocity.x *= 0.95;
 		}
 		me->where = v2_add(last, me->velocity);
-		if (v2_tile(me->where, wall))
+		if (world_tile(world, world->wall, me->where))
 		{
 			me->velocity = (t_v2){ 0.0, 0.0 };
 			me->where = last;
@@ -64,8 +64,7 @@ static inline void collide_or_move(t_me *me, const char **const wall)
 	}
 }
 
-inline void			me_move(t_me *me, const char **const wall,
-							const uint8_t *keys)
+inline void			me_move(t_me *me, t_world *world, const uint8_t *keys)
 {
 	t_v2 acc;
 
@@ -91,5 +90,5 @@ inline void			me_move(t_me *me, const char **const wall,
 	}
 	if (v2_mag(me->velocity) > me->speed)
 		me->velocity = v2_mul(v2_unit(me->velocity), me->speed);
-	collide_or_move(me, wall);
+	collide_or_move(me, world);
 }

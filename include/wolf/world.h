@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wolf.h                                             :+:      :+:    :+:   */
+/*   wolf/world.h                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,12 +10,22 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WOLF_H
-# define WOLF_H
+#ifndef WOLF_WORLD_H
+# define WOLF_WORLD_H
 
-# include "wolf/game.h"
 # include "wolf/math.h"
-# include "wolf/me.h"
-# include "wolf/world.h"
+
+typedef struct	s_world
+{
+	uint8_t		width;
+	uint8_t		height;
+	uint8_t		*floor;
+	uint8_t		*wall;
+	uint8_t		*ceil;
+}				t_world;
+
+extern int		world_init(t_world *world, int ac, char *av[]);
+extern int		world_tile(t_world *world, uint8_t *tiles, t_v2 a);
+extern t_hit	world_cast(t_world *world, t_v2 where, t_v2 direction);
 
 #endif
