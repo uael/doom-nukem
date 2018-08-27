@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wolf/game.h                                        :+:      :+:    :+:   */
+/*   wolf/gpu.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,23 +10,31 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WOLF_GAME_H
-# define WOLF_GAME_H
+#ifndef WOLF_GPU_H
+# define WOLF_GPU_H
 
-# include "wolf/gpu.h"
-# include "wolf/me.h"
+# include <SDL2/SDL.h>
 
-typedef struct	s_game
+typedef struct	s_display
 {
-	t_gpu			gpu;
-	t_bool			running;
-	t_world			*world;
-	t_me			*me;
-	const uint8_t	*key;
-}				t_game;
+	uint32_t	*pixels;
+	int			width;
+}				t_display;
 
-extern int		game_init(t_game *game, t_world *world, t_me *me);
-extern int		game_quit(t_game *game, const char *msg);
-extern int		game_loop(t_game *game);
+typedef struct	s_gpu
+{
+	SDL_Window		*win;
+	SDL_Texture		*texture;
+	SDL_Renderer	*renderer;
+	int				width;
+	int				height;
+	t_display		display;
+}				t_gpu;
+
+extern int		gpu_init(t_gpu *gpu, int width, int height);
+extern void		gpu_destroy(t_gpu *gpu);
+extern void		gpu_lock(t_gpu *gpu);
+extern void		gpu_put(t_gpu *gpu, int x, int y, uint32_t pixel);
+extern void		gpu_unlock(const t_gpu *gpu);
 
 #endif

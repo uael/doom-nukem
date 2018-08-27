@@ -14,8 +14,10 @@
 # define WOLF_H
 
 # include "wolf/game.h"
+# include "wolf/gpu.h"
 # include "wolf/math.h"
 # include "wolf/me.h"
+# include "wolf/render.h"
 # include "wolf/world.h"
 
 #endif

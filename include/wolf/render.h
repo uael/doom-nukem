@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   wolf/game.h                                        :+:      :+:    :+:   */
+/*   wolf/render.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,23 +10,18 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef WOLF_GAME_H
-# define WOLF_GAME_H
+#ifndef WOLF_RENDER_H
+# define WOLF_RENDER_H
 
-# include "wolf/gpu.h"
-# include "wolf/me.h"
+# include "wolf/game.h"
 
-typedef struct	s_game
+typedef struct	s_wall
 {
-	t_gpu			gpu;
-	t_bool			running;
-	t_world			*world;
-	t_me			*me;
-	const uint8_t	*key;
-}				t_game;
+	int			top;
+	int			bottom;
+	float		size;
+}				t_wall;
 
-extern int		game_init(t_game *game, t_world *world, t_me *me);
-extern int		game_quit(t_game *game, const char *msg);
-extern int		game_loop(t_game *game);
+extern void		game_render(t_game *game);
 
 #endif

@@ -93,6 +93,9 @@ macro(add_main NAME)
 endmacro()
 
 add_main(wolf3d
+  ${__SRC_DIR}/game.c
+  ${__SRC_DIR}/render.c
+  ${__SRC_DIR}/gpu.c
   ${__SRC_DIR}/world.c
   ${__SRC_DIR}/me.c
   ${__SRC_DIR}/math.c
