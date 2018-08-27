@@ -14,7 +14,7 @@
 
 #include <SDL2/SDL.h>
 
-inline void			me_init(t_me *me, t_v2 pos, const double focal)
+inline void			me_init(t_me *me, t_v2 pos, const float focal)
 {
 	*me = (t_me){
 		{ { focal, -1.0f }, { focal, +1.0f } },

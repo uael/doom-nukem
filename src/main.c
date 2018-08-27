@@ -43,7 +43,7 @@ typedef struct	s_wall
 {
 	int			top;
 	int			bottom;
-	double		size;
+	float		size;
 }				t_wall;
 
 int game_quit(t_game *game, const char *msg);
@@ -71,10 +71,10 @@ static void gpu_unlock(t_gpu *gpu)
 }
 
 static void wall_project(t_wall *wall, const int xres, const int yres,
-	const double focal, const t_v2 corrected)
+	const float focal, const t_v2 corrected)
 {
-	const double normal = corrected.x < 1e-2f ? 1e-2f : corrected.x;
-	const double size = 0.5f * focal * xres / normal;
+	const float normal = corrected.x < 1e-2f ? 1e-2f : corrected.x;
+	const float size = 0.5f * focal * xres / normal;
 	const int top = (const int) ((yres + size) / 2.0f);
 	const int bot = (const int) ((yres - size) / 2.0f);
 

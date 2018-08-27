@@ -20,9 +20,9 @@ typedef struct	s_me
 	t_line		fov;
 	t_v2		where;
 	t_v2		velocity;
-	double		speed;
-	double		accel;
-	double		theta;
+	float		speed;
+	float		accel;
+	float		theta;
 }				t_me;
 
 /*
@@ -31,7 +31,7 @@ typedef struct	s_me
 ** @param pos   Initial player position
 ** @param focal Player FOV focal
 */
-extern void		me_init(t_me *me, t_v2 pos, double focal);
+extern void		me_init(t_me *me, t_v2 pos, float focal);
 /*
 ** Move the player based on the keyboard state
 ** @param me   The player

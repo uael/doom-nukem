@@ -13,27 +13,27 @@
 #include <wolf.h>
 #include <libft.h>
 
-inline int		math_fl(const double x)
+inline int		math_fl(const float x)
 {
 	return ((int)x - (x < (int)x));
 }
 
-inline int		math_cl(const double x)
+inline int		math_cl(const float x)
 {
 	return ((int)x + (x > (int)x));
 }
 
-inline int		math_isfl(double x)
+inline int		math_isfl(float x)
 {
-	return (fabs((int)x - x) < 0.01);
+	return (fabsf((int)x - x) < 0.000001f);
 }
 
-inline t_v2	v2_turn(t_v2 a, double t)
+inline t_v2	v2_turn(t_v2 a, float t)
 {
 	t_v2 b;
 
-	b.x = a.x * cos(t) - a.y * sin(t);
-	b.y = a.x * sin(t) + a.y * cos(t);
+	b.x = a.x * cosf(t) - a.y * sinf(t);
+	b.y = a.x * sinf(t) + a.y * cosf(t);
 	return (b);
 }
 
@@ -64,7 +64,7 @@ inline t_v2	v2_add(t_v2 a, t_v2 b)
 	return (c);
 }
 
-inline t_v2	v2_mul(t_v2 a, double n)
+inline t_v2	v2_mul(t_v2 a, float n)
 {
 	t_v2 b;
 
@@ -73,17 +73,17 @@ inline t_v2	v2_mul(t_v2 a, double n)
 	return (b);
 }
 
-inline double	v2_mag(t_v2 a)
+inline float	v2_mag(t_v2 a)
 {
-	return (sqrt(a.x * a.x + a.y * a.y));
+	return (sqrtf(a.x * a.x + a.y * a.y));
 }
 
 inline t_v2	v2_unit(t_v2 a)
 {
-	return (v2_mul(a, 1.0 / v2_mag(a)));
+	return (v2_mul(a, 1.0f / v2_mag(a)));
 }
 
-inline double	v2_slope(t_v2 a)
+inline float	v2_slope(t_v2 a)
 {
 	return (a.y / a.x);
 }
@@ -111,17 +111,17 @@ inline int		v2_tile(t_v2 a, const char **tiles)
 	return (tiles[(int)a.y][(int)a.x] - '0');
 }
 
-inline double	math_dec(const double x)
+inline float	math_dec(const float x)
 {
 	return (x - (int)x);
 }
 
-inline double	v2_pcast(double size, int yres, int y)
+inline float	v2_pcast(float size, int yres, int y)
 {
 	return (size / (2 * (y + 1) - yres));
 }
 
-inline t_line	line_rotate(const t_line l, const double t)
+inline t_line	line_rotate(const t_line l, const float t)
 {
 	t_line line;
 
@@ -130,7 +130,7 @@ inline t_line	line_rotate(const t_line l, const double t)
 	return (line);
 }
 
-inline t_v2	line_lerp(const t_line l, const double n)
+inline t_v2	line_lerp(const t_line l, const float n)
 {
 	return v2_add(l.a, v2_mul(v2_sub(l.b, l.a), n));
 }
