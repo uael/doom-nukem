@@ -48,7 +48,6 @@ inline t_v2		v2_unit(t_v2 a);
 inline float	v2_slope(t_v2 a);
 inline t_v2		v2_sh(t_v2 a, t_v2 b);
 inline t_v2		v2_sv(t_v2 a, t_v2 b);
-inline int		v2_tile(t_v2 a, const char **tiles);
 inline float	v2_pcast(float size, int yres, int y);
 inline t_line	line_rotate(t_line l, float t);
 inline t_v2		line_lerp(t_line l, float n);

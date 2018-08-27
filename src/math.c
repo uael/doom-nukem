@@ -28,7 +28,7 @@ inline int		math_isfl(float x)
 	return (fabsf((int)x - x) < 0.000001f);
 }
 
-inline t_v2	v2_turn(t_v2 a, float t)
+inline t_v2		v2_turn(t_v2 a, float t)
 {
 	t_v2 b;
 
@@ -37,7 +37,7 @@ inline t_v2	v2_turn(t_v2 a, float t)
 	return (b);
 }
 
-inline t_v2	v2_rag(t_v2 a)
+inline t_v2		v2_rag(t_v2 a)
 {
 	t_v2 b;
 
@@ -46,7 +46,7 @@ inline t_v2	v2_rag(t_v2 a)
 	return (b);
 }
 
-inline t_v2	v2_sub(t_v2 a, t_v2 b)
+inline t_v2		v2_sub(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
@@ -55,7 +55,7 @@ inline t_v2	v2_sub(t_v2 a, t_v2 b)
 	return (c);
 }
 
-inline t_v2	v2_add(t_v2 a, t_v2 b)
+inline t_v2		v2_add(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
@@ -64,7 +64,7 @@ inline t_v2	v2_add(t_v2 a, t_v2 b)
 	return (c);
 }
 
-inline t_v2	v2_mul(t_v2 a, float n)
+inline t_v2		v2_mul(t_v2 a, float n)
 {
 	t_v2 b;
 
@@ -78,7 +78,7 @@ inline float	v2_mag(t_v2 a)
 	return (sqrtf(a.x * a.x + a.y * a.y));
 }
 
-inline t_v2	v2_unit(t_v2 a)
+inline t_v2		v2_unit(t_v2 a)
 {
 	return (v2_mul(a, 1.0f / v2_mag(a)));
 }
@@ -88,7 +88,7 @@ inline float	v2_slope(t_v2 a)
 	return (a.y / a.x);
 }
 
-inline t_v2	v2_sh(t_v2 a, t_v2 b)
+inline t_v2		v2_sh(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
@@ -97,18 +97,13 @@ inline t_v2	v2_sh(t_v2 a, t_v2 b)
 	return (c);
 }
 
-inline t_v2	v2_sv(t_v2 a, t_v2 b)
+inline t_v2		v2_sv(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
 	c.y = b.y > 0.0f ? math_fl(a.y + 1.0f) : math_cl(a.y - 1.0f);
 	c.x = (c.y - a.y) / v2_slope(b) + a.x;
 	return (c);
-}
-
-inline int		v2_tile(t_v2 a, const char **tiles)
-{
-	return (tiles[(int)a.y][(int)a.x] - '0');
 }
 
 inline float	math_dec(const float x)
@@ -130,7 +125,7 @@ inline t_line	line_rotate(const t_line l, const float t)
 	return (line);
 }
 
-inline t_v2	line_lerp(const t_line l, const float n)
+inline t_v2		line_lerp(const t_line l, const float n)
 {
 	return v2_add(l.a, v2_mul(v2_sub(l.b, l.a), n));
 }

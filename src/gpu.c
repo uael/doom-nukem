@@ -21,18 +21,22 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 		SDL_RENDERER_ACCELERATED)))
 		return -1;
 	if (!(gpu->texture = SDL_CreateTexture(gpu->renderer,
-		SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING, height, width)))
+		SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
+		height - 200, width)))
 		return -1;
 	gpu->width = width;
-	gpu->height = height;
+	gpu->height = height - 200;
 	return 0;
 }
 
 inline void	gpu_destroy(t_gpu *gpu)
 {
-	gpu->win ? SDL_DestroyWindow(gpu->win) : 0;
-	gpu->renderer ? SDL_DestroyRenderer(gpu->renderer) : 0;
-	gpu->texture ? SDL_DestroyTexture(gpu->texture) : 0;
+	if (gpu->win)
+		SDL_DestroyWindow(gpu->win);
+	if (gpu->renderer)
+		SDL_DestroyRenderer(gpu->renderer);
+	if (gpu->texture)
+		SDL_DestroyTexture(gpu->texture);
 }
 
 inline void	gpu_lock(t_gpu *gpu)

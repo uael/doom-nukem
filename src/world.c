@@ -35,8 +35,10 @@ static inline int	compress(t_world *world, uint8_t *buf)
 			++it;
 			continue;
 		}
-		if (*it == ' ')
-			*it = '0';
+		if (it[0] == ' ')
+			it[0] = '0';
+		if (it[1] == ' ')
+			it[1] = '0';
 		if (!ft_isdigit(*it) || !ft_isdigit(it[1]))
 			return (-1);
 		buf[i++] = (uint8_t)(((it[0] - '0') * 10) + it[1] - '0');
