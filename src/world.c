@@ -33,7 +33,7 @@ static inline int	compress(t_world *world, uint8_t *buf)
 		if (*it == '\n')
 		{
 			++it;
-			continue;
+			continue ;
 		}
 		if (it[0] == ' ')
 			it[0] = '0';
@@ -47,7 +47,7 @@ static inline int	compress(t_world *world, uint8_t *buf)
 	return (0);
 }
 
-inline int		world_init(t_world *world, int ac, char *av[])
+inline int			world_init(t_world *world, int ac, char *av[])
 {
 	int				fd;
 	static uint8_t	buf[(((TILE_MAX * TILE_SZ) + 1) * TILE_MAX * 3) + 3];
@@ -72,14 +72,14 @@ inline int		world_init(t_world *world, int ac, char *av[])
 	return (close(fd));
 }
 
-inline int		world_tile(t_world *world, uint8_t *tiles, t_v2 a)
+inline int			world_tile(t_world *world, uint8_t *tiles, t_v2 a)
 {
 	if (a.x > world->width || a.y > world->height)
-		return 1;
+		return (1);
 	return ((int)tiles[((int)a.y * world->width) + (int)a.x]);
 }
 
-inline t_hit	world_cast(t_world *world, t_v2 where, t_v2 direction)
+inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 direction)
 {
 	t_v2 hor = v2_sh(where, direction);
 	t_v2 ver = v2_sv(where, direction);

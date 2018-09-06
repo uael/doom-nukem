@@ -35,7 +35,7 @@ inline void			me_init(t_me *me, t_v2 pos, const float focal)
 **  - If we still collide, keep calm, stay in place, don't SEGFAULT..
 */
 
-static inline void collide_or_move(t_me *me, t_world *world)
+static inline void	collide_or_move(t_me *me, t_world *world)
 {
 	t_v2	last;
 	t_hit	hit;

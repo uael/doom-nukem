@@ -127,5 +127,5 @@ inline t_line	line_rotate(const t_line l, const float t)
 
 inline t_v2		line_lerp(const t_line l, const float n)
 {
-	return v2_add(l.a, v2_mul(v2_sub(l.b, l.a), n));
+	return (v2_add(l.a, v2_mul(v2_sub(l.b, l.a), n)));
 }

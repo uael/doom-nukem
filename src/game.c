@@ -16,13 +16,13 @@
 int	game_init(t_game *g, t_world *world, t_me *me)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
-		return -1;
+		return (-1);
 	if (gpu_init(&g->gpu, 800, 800))
-		return -1;
+		return (-1);
 	g->running = TRUE;
 	g->world = world;
 	g->me = me;
-	return 0;
+	return (0);
 }
 
 int	game_quit(t_game *game, const char *msg)
@@ -55,7 +55,7 @@ int	game_loop(t_game *game)
 		t0 = SDL_GetTicks();
 		if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE
 			|| e.key.keysym.sym == SDLK_END)
-			break;
+			break ;
 		if (game->me->velocity.x || game->me->velocity.y
 			|| e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_a
 			|| e.key.keysym.sym == SDLK_s || e.key.keysym.sym == SDLK_d

@@ -16,17 +16,17 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 {
 	if (!(gpu->win = SDL_CreateWindow("wolf3d", SDL_WINDOWPOS_UNDEFINED,
 		SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN)))
-		return -1;
+		return (-1);
 	if (!(gpu->renderer = SDL_CreateRenderer(gpu->win, -1,
 		SDL_RENDERER_ACCELERATED)))
-		return -1;
+		return (-1);
 	if (!(gpu->texture = SDL_CreateTexture(gpu->renderer,
 		SDL_PIXELFORMAT_ARGB8888, SDL_TEXTUREACCESS_STREAMING,
 		height - 200, width)))
-		return -1;
+		return (-1);
 	gpu->width = width;
 	gpu->height = height - 200;
-	return 0;
+	return (0);
 }
 
 inline void	gpu_destroy(t_gpu *gpu)
@@ -49,13 +49,13 @@ inline void	gpu_lock(t_gpu *gpu)
 	gpu->display.width = pitch / (int)sizeof(uint32_t);
 }
 
-inline void gpu_put(t_gpu *gpu, const int x, const int y,
+inline void	gpu_put(t_gpu *gpu, const int x, const int y,
 					const uint32_t pixel)
 {
 	gpu->display.pixels[y + x * gpu->display.width] = pixel;
 }
 
-inline void gpu_unlock(const t_gpu *gpu)
+inline void	gpu_unlock(const t_gpu *gpu)
 {
 	SDL_UnlockTexture(gpu->texture);
 	SDL_RenderCopyEx(gpu->renderer, gpu->texture, NULL,

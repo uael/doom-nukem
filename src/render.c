@@ -38,16 +38,16 @@ static uint32_t	color(const int tile)
 
 void			game_render(t_game *game)
 {
-	int x;
-	int y;
-	t_line camera;
-	t_wall wall;
+	int		x;
+	int		y;
+	t_line	camera;
+	t_wall	wall;
 
 	game->key = SDL_GetKeyboardState(NULL);
 	me_move(game->me, game->world, game->key);
 	camera = line_rotate(game->me->fov, game->me->theta);
 	gpu_lock(&game->gpu);
-	for(x = 0; x < game->gpu.width; x++)
+	for (x = 0; x < game->gpu.width; x++)
 	{
 		const t_v2 dir = line_lerp(camera, x / (float) game->gpu.width);
 		const t_hit hit = world_cast(game->world, game->me->where, dir);
