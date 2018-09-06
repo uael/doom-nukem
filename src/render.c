@@ -10,7 +10,30 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <assert.h>
 #include "wolf/render.h"
+
+static uint32_t		get_super_color(t_gpu *gpu, int tile, t_v2 pixel)
+{
+	int x;
+	int y;
+	int tx;
+	int ty;
+	int ret;
+	int ret2;
+
+	x = (int)(fabsf((int)pixel.x - pixel.x) * WALLS_TEXTURE_SIZE);
+	y = (int)(fabsf((int)pixel.y - pixel.y) * WALLS_TEXTURE_SIZE);
+
+	tx = ((tile % WALLS_MX) * WALLS_TEXTURE_SIZE) + x;
+	ty = ((tile / WALLS_MX) * WALLS_TEXTURE_SIZE) + y;
+
+	ret2 = (gpu->walls->pitch / sizeof(uint32_t));
+	ret = ((gpu->walls->pitch / sizeof(uint32_t)) * ty) + tx;
+
+	return ((uint32_t *)gpu->walls->pixels)[ret];
+}
+
 
 static void			wall_project(t_wall *wall, t_v2 res, float focal, t_v2 corr)
 {
@@ -51,16 +74,18 @@ static void			render_column(t_game *game, int x, t_hit hit,
 	while (y < wall->bottom)
 	{
 		pixel = line_lerp(trace, -v2_pcast(wall->size, game->gpu.height, y));
-		color = get_color(world_tile(game->world, game->world->floor, pixel));
+		color = get_super_color(&game->gpu, world_tile(game->world, game->world->floor, pixel), pixel);
 		gpu_put(&game->gpu, x, y, color);
 		++y;
 	}
 	while (y < wall->top)
-		gpu_put(&game->gpu, x, ++y, get_color(hit.tile));
+	{
+		gpu_put(&game->gpu, x, y++, get_color(hit.tile));
+	}
 	while (y < game->gpu.height)
 	{
 		pixel = line_lerp(trace, v2_pcast(wall->size, game->gpu.height, y));
-		color = get_color(world_tile(game->world, game->world->floor, pixel));
+		color = get_super_color(&game->gpu, world_tile(game->world, game->world->floor, pixel), pixel);
 		gpu_put(&game->gpu, x, y, color);
 		++y;
 	}

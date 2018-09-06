@@ -14,6 +14,16 @@
 # define WOLF_GPU_H
 
 # include <SDL2/SDL.h>
+# include <SDL2/SDL_image.h>
+
+# define WALLS_W (384)
+# define WALLS_H (1216)
+# define WALLS_MX (6)
+# define WALLS_MY (18)
+# define WALLS_TEXTURE_SIZE (64)
+
+# define WEAPONS_W (324)
+# define WEAPONS_H (293)
 
 typedef struct	s_display
 {
@@ -24,8 +34,10 @@ typedef struct	s_display
 typedef struct	s_gpu
 {
 	SDL_Window		*win;
-	SDL_Texture		*texture;
 	SDL_Renderer	*renderer;
+	SDL_Texture		*screen;
+	SDL_Surface		*walls;
+	SDL_Surface		*weapons;
 	int				width;
 	int				height;
 	t_display		display;
