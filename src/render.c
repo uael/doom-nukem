@@ -12,60 +12,82 @@
 
 #include "wolf/render.h"
 
-static void		wall_project(t_wall *wall, const int xres, const int yres,
-						 const float focal, const t_v2 corrected)
+static void			wall_project(t_wall *wall, t_v2 res, float focal, t_v2 corr)
 {
-	const float normal = corrected.x < 1e-2f ? 1e-2f : corrected.x;
-	const float size = 0.5f * focal * xres / normal;
-	const int top = (const int) ((yres + size) / 2.0f);
-	const int bot = (const int) ((yres - size) / 2.0f);
+	float	normal;
+	float	size;
+	int		top;
+	int		bot;
 
-	wall->top = top > yres ? yres : top;
+	normal = corr.x < 1e-2f ? 1e-2f : corr.x;
+	size = 0.5f * focal * (int)res.x / normal;
+	top = (int)(((int)res.y + size) / 2.0f);
+	bot = (int)(((int)res.y - size) / 2.0f);
+	wall->top = top > (int)res.y ? (int)res.y : top;
 	wall->bottom = bot < 0 ? 0 : bot;
 	wall->size = size;
 }
 
-static uint32_t	color(const int tile)
+static uint32_t		get_color(const int tile)
 {
-	switch(tile)
+	if (tile == 3)
+		return (0x000000AA);
+	if (tile == 2)
+		return (0x0000AA00);
+	return (0x00AA0000);
+}
+
+static void			render_column(t_game *game, int x, t_hit hit,
+	const t_wall *wall)
+{
+	int			y;
+	t_line		trace;
+	t_v2		pixel;
+	uint32_t	color;
+
+	trace.a = game->me->where;
+	trace.b = hit.where;
+	y = 0;
+	while (y < wall->bottom)
 	{
-		default:
-		case 1: return 0x00AA0000; // Red.
-		case 2: return 0x0000AA00; // Green.
-		case 3: return 0x000000AA; // Blue.
+		pixel = line_lerp(trace, -v2_pcast(wall->size, game->gpu.height, y));
+		color = get_color(world_tile(game->world, game->world->floor, pixel));
+		gpu_put(&game->gpu, x, y, color);
+		++y;
+	}
+	while (y < wall->top)
+		gpu_put(&game->gpu, x, ++y, get_color(hit.tile));
+	while (y < game->gpu.height)
+	{
+		pixel = line_lerp(trace, v2_pcast(wall->size, game->gpu.height, y));
+		color = get_color(world_tile(game->world, game->world->floor, pixel));
+		gpu_put(&game->gpu, x, y, color);
+		++y;
 	}
 }
 
-void			game_render(t_game *game)
+void				game_render(t_game *game)
 {
 	int		x;
-	int		y;
 	t_line	camera;
+	t_v2	dir;
 	t_wall	wall;
+	t_hit	hit;
 
 	game->key = SDL_GetKeyboardState(NULL);
 	me_move(game->me, game->world, game->key);
 	camera = line_rotate(game->me->fov, game->me->theta);
 	gpu_lock(&game->gpu);
-	for (x = 0; x < game->gpu.width; x++)
+	x = -1;
+	while (++x < game->gpu.width)
 	{
-		const t_v2 dir = line_lerp(camera, x / (float) game->gpu.width);
-		const t_hit hit = world_cast(game->world, game->me->where, dir);
-		const t_line trace = { game->me->where, hit.where };
-
-		wall_project(&wall, game->gpu.width, game->gpu.height, game->me->fov.a.x,
-			v2_turn(v2_sub(hit.where, game->me->where),
-				-game->me->theta));
-		for (y = 0; y < wall.bottom; y++)
-			gpu_put(&game->gpu, x, y, color(world_tile(
-				game->world, game->world->floor,
-				line_lerp(trace, -v2_pcast(wall.size, game->gpu.height, y)))));
-		for (y = wall.bottom; y < wall.top; y++)
-			gpu_put(&game->gpu, x, y, color(hit.tile));
-		for (y = wall.top; y < game->gpu.height; y++)
-			gpu_put(&game->gpu, x, y, color(world_tile(
-				game->world, game->world->ceil,
-				line_lerp(trace, +v2_pcast(wall.size, game->gpu.height, y)))));
+		dir = line_lerp(camera, x / (float)game->gpu.width);
+		hit = world_cast(game->world, game->me->where, dir);
+		wall_project(&wall,
+			(t_v2){ game->gpu.width, game->gpu.height },
+			game->me->fov.a.x,
+			v2_turn(v2_sub(hit.where, game->me->where), -game->me->theta));
+		render_column(game, x, hit, &wall);
 	}
 	gpu_unlock(&game->gpu);
 }

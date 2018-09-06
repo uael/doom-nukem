@@ -79,16 +79,33 @@ inline int			world_tile(t_world *world, uint8_t *tiles, t_v2 a)
 	return ((int)tiles[((int)a.y * world->width) + (int)a.x]);
 }
 
-inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 direction)
+static t_hit		hit_ray(t_world *world, t_v2 dir, t_v2 ray, float step)
 {
-	t_v2 hor = v2_sh(where, direction);
-	t_v2 ver = v2_sv(where, direction);
-	t_v2 ray = v2_mag(v2_sub(hor, where)) < v2_mag(v2_sub(ver, where)) ? hor : ver;
-	t_v2 dc = v2_mul(direction, 0.01f);
-	t_v2 dx = { dc.x, 0.0f };
-	t_v2 dy = { 0.0f, dc.y };
-	t_v2 test = v2_add(ray, v2_mag(v2_sub(hor, ver)) < 1e-3f ? dc :
-							math_dec(ray.x) == 0.0f ? dx : dy);
-	const t_hit hit = {world_tile(world, world->wall, test), ray };
-	return (hit.tile ? hit : world_cast(world, ray, direction));
+	t_v2	dc;
+	t_v2	test;
+	t_hit	hit;
+
+	dc = v2_mul(dir, 0.01f);
+	if (step < 1e-3f)
+		test = v2_add(ray, dc);
+	else
+		test = v2_add(ray, math_dec(ray.x) == 0.0f
+			? (t_v2){ dc.x, 0.0f } : (t_v2){ 0.0f, dc.y });
+	if (!(hit.tile = world_tile(world, world->wall, test)))
+		return (world_cast(world, ray, dir));
+	hit.where = ray;
+	return (hit);
+}
+
+inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 dir)
+{
+	t_v2	hor_step;
+	t_v2	ver_step;
+	t_v2	ray;
+
+	hor_step = v2_steps_hor(where, dir);
+	ver_step = v2_steps_ver(where, dir);
+	ray = v2_mag(v2_sub(hor_step, where)) < v2_mag(v2_sub(ver_step, where))
+		? hor_step : ver_step;
+	return (hit_ray(world, dir, ray, v2_mag(v2_sub(hor_step, ver_step))));
 }

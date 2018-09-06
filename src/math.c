@@ -88,7 +88,7 @@ inline float	v2_slope(t_v2 a)
 	return (a.y / a.x);
 }
 
-inline t_v2		v2_sh(t_v2 a, t_v2 b)
+inline t_v2		v2_steps_hor(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
@@ -97,7 +97,7 @@ inline t_v2		v2_sh(t_v2 a, t_v2 b)
 	return (c);
 }
 
-inline t_v2		v2_sv(t_v2 a, t_v2 b)
+inline t_v2		v2_steps_ver(t_v2 a, t_v2 b)
 {
 	t_v2 c;
 
