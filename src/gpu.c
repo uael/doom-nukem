@@ -21,7 +21,7 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 		SDL_RENDERER_PRESENTVSYNC)))
 		return (-1);
 	if (!(gpu->screen = SDL_CreateTexture(gpu->renderer,
-		SDL_PIXELFORMAT_RGBX8888, SDL_TEXTUREACCESS_STREAMING,
+		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING,
 		height - 200, width)))
 		return (-1);
 	gpu->width = width;
@@ -29,9 +29,11 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 	IMG_Init(IMG_INIT_PNG);
 	if (!(gpu->walls = IMG_Load("asset/walls.png")))
 		return (-1);
+	gpu->walls = SDL_ConvertSurfaceFormat(gpu->walls, SDL_PIXELFORMAT_RGBA8888, 0);
 	SDL_LockSurface(gpu->walls);
 	if (!(gpu->weapons = IMG_Load("asset/weapons.png")))
 		return (-1);
+	gpu->weapons = SDL_ConvertSurfaceFormat(gpu->weapons, SDL_PIXELFORMAT_RGBA8888, 0);
 	SDL_LockSurface(gpu->weapons);
 	if (gpu->weapons->w != WEAPONS_W || gpu->weapons->h != WEAPONS_H)
 		return (-1);
@@ -71,6 +73,9 @@ inline void	gpu_lock(t_gpu *gpu)
 inline void	gpu_put(t_gpu *gpu, const int x, const int y,
 					const uint32_t pixel)
 {
+
+	if (y >= gpu->height || x >= gpu->width)
+		return;
 	gpu->display.pixels[y + x * gpu->display.width] = pixel;
 }
 

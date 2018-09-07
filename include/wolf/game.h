@@ -18,11 +18,10 @@
 
 typedef struct	s_game
 {
-	t_gpu			gpu;
-	t_bool			running;
-	t_world			*world;
-	t_me			*me;
-	const uint8_t	*key;
+	t_gpu		gpu;
+	t_bool		running;
+	t_world		*world;
+	t_me		*me;
 }				t_game;
 
 extern int		game_init(t_game *game, t_world *world, t_me *me);

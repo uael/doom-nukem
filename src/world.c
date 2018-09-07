@@ -88,9 +88,16 @@ static t_hit		hit_ray(t_world *world, t_v2 dir, t_v2 ray, float step)
 	dc = v2_mul(dir, 0.01f);
 	if (step < 1e-3f)
 		test = v2_add(ray, dc);
+	else if (math_dec(ray.x) == 0.0f)
+	{
+		hit.hor = 1;
+		test = v2_add(ray, (t_v2){ dc.x, 0.0f });
+	}
 	else
-		test = v2_add(ray, math_dec(ray.x) == 0.0f
-			? (t_v2){ dc.x, 0.0f } : (t_v2){ 0.0f, dc.y });
+	{
+		hit.hor = 0;
+		test = v2_add(ray, (t_v2){ 0.0f, dc.y });
+	}
 	if (!(hit.tile = world_tile(world, world->wall, test)))
 		return (world_cast(world, ray, dir));
 	hit.where = ray;

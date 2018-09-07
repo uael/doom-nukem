@@ -51,8 +51,8 @@ int	game_loop(t_game *game)
 	game_render(game);
 	while (game->running)
 	{
-		SDL_PollEvent(&e);
 		t0 = SDL_GetTicks();
+		SDL_PollEvent(&e);
 		if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE
 			|| e.key.keysym.sym == SDLK_END)
 			break ;
