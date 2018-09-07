@@ -38,9 +38,9 @@ typedef struct	s_gpu
 	SDL_Texture		*screen;
 	SDL_Surface		*walls;
 	SDL_Surface		*weapons;
-	int				width;
-	int				height;
 	t_display		display;
+	int				w;
+	int				h;
 }				t_gpu;
 
 extern int		gpu_init(t_gpu *gpu, int width, int height);

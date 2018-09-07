@@ -20,7 +20,7 @@ inline void			me_init(t_me *me, t_v2 pos, const float focal)
 		{ { focal, -1.0f }, { focal, +1.0f } },
 		pos,
 		{ 0.0f, 0.0f },
-		0.10f,
+		0.15f,
 		0.015f,
 		0.0f
 	};
@@ -44,6 +44,7 @@ static inline void	collide_or_move(t_me *me, t_world *world)
 	me->where = v2_add(me->where, me->velocity);
 	if (world_tile(world, world->wall, me->where))
 	{
+
 		hit = world_cast(world, last, me->velocity);
 		if (math_isfl(hit.where.x))
 		{

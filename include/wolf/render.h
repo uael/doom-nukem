@@ -22,6 +22,12 @@ typedef struct	s_wall
 	float		size;
 }				t_wall;
 
+typedef struct	s_texture
+{
+	t_v2		pixel;
+	int			tile;
+}				t_text;
+
 extern void		game_render(t_game *game);
 
 #endif

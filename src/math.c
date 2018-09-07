@@ -64,6 +64,11 @@ inline t_v2		v2_add(t_v2 a, t_v2 b)
 	return (c);
 }
 
+inline float	v2_dist(t_v2 a, t_v2 b)
+{
+	return (sqrtf(powf(b.x - a.x,2) + powf(b.y - a.y, 2)));
+}
+
 inline t_v2		v2_mul(t_v2 a, float n)
 {
 	t_v2 b;
@@ -125,7 +130,7 @@ inline t_line	line_rotate(const t_line l, const float t)
 	return (line);
 }
 
-inline t_v2		line_lerp(const t_line l, const float n)
+inline t_v2		ln_lerp(t_line l, float n)
 {
 	return (v2_add(l.a, v2_mul(v2_sub(l.b, l.a), n)));
 }

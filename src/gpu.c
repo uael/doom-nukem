@@ -24,8 +24,8 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING,
 		height - 200, width)))
 		return (-1);
-	gpu->width = width;
-	gpu->height = height - 200;
+	gpu->w = width;
+	gpu->h = height - 200;
 	IMG_Init(IMG_INIT_PNG);
 	if (!(gpu->walls = IMG_Load("asset/walls.png")))
 		return (-1);
@@ -74,7 +74,7 @@ inline void	gpu_put(t_gpu *gpu, const int x, const int y,
 					const uint32_t pixel)
 {
 
-	if (y >= gpu->height || x >= gpu->width)
+	if (y >= gpu->h || x >= gpu->w)
 		return;
 	gpu->display.pixels[y + x * gpu->display.width] = pixel;
 }
@@ -84,9 +84,9 @@ inline void	gpu_unlock(const t_gpu *gpu)
 	SDL_UnlockTexture(gpu->screen);
 	SDL_RenderCopyEx(gpu->renderer, gpu->screen, NULL,
 		&(SDL_Rect){
-			(gpu->width - gpu->height) / 2,
-			(gpu->height - gpu->width) / 2,
-			gpu->height, gpu->width,
+			(gpu->w - gpu->h) / 2,
+			(gpu->h - gpu->w) / 2,
+			gpu->h, gpu->w,
 		}, -90, NULL, SDL_FLIP_NONE);
 	SDL_RenderPresent(gpu->renderer);
 }

@@ -43,6 +43,7 @@ inline t_v2		v2_turn(t_v2 a, float t);
 inline t_v2		v2_rag(t_v2 a);
 inline t_v2		v2_sub(t_v2 a, t_v2 b);
 inline t_v2		v2_add(t_v2 a, t_v2 b);
+inline float	v2_dist(t_v2 a, t_v2 b);
 inline t_v2		v2_mul(t_v2 a, float n);
 inline float	v2_mag(t_v2 a);
 inline t_v2		v2_unit(t_v2 a);
@@ -51,6 +52,6 @@ inline t_v2		v2_steps_hor(t_v2 a, t_v2 b);
 inline t_v2		v2_steps_ver(t_v2 a, t_v2 b);
 inline float	v2_pcast(float size, int yres, int y);
 inline t_line	line_rotate(t_line l, float t);
-inline t_v2		line_lerp(t_line l, float n);
+inline t_v2		ln_lerp(t_line l, float n);
 
 #endif
