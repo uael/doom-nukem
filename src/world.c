@@ -88,20 +88,16 @@ static t_hit		hit_ray(t_world *world, t_v2 dir, t_v2 ray, float step)
 	dc = v2_mul(dir, 0.01f);
 	if (step < 1e-3f)
 		test = v2_add(ray, dc);
-	else if (math_dec(ray.x) == 0.0f)
-	{
-		hit.hor = 1;
+	else if ((hit.hor = (math_dec(ray.x) == 0.0f)))
 		test = v2_add(ray, (t_v2){ dc.x, 0.0f });
-	}
 	else
-	{
-		hit.hor = 0;
 		test = v2_add(ray, (t_v2){ 0.0f, dc.y });
+	if ((hit.tile = world_tile(world, world->wall, test)))
+	{
+		hit.where = ray;
+		return (hit);
 	}
-	if (!(hit.tile = world_tile(world, world->wall, test)))
-		return (world_cast(world, ray, dir));
-	hit.where = ray;
-	return (hit);
+	return (world_cast(world, ray, dir));
 }
 
 inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 dir)
@@ -115,4 +111,27 @@ inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 dir)
 	ray = v2_mag(v2_sub(hor_step, where)) < v2_mag(v2_sub(ver_step, where))
 		? hor_step : ver_step;
 	return (hit_ray(world, dir, ray, v2_mag(v2_sub(hor_step, ver_step))));
+}
+
+inline int			world_hit(t_world *world, t_v2 start, float range, t_hit *h)
+{
+	int count;
+	t_v2 dir;
+
+	count = 0;
+	dir = start;
+	dir.x += range;
+	if (world_tile(world, world->wall, dir))
+		h[count++] = world_cast(world, start, (t_v2){ 1, 0 });
+	dir.x -= (range * 2);
+	if (world_tile(world, world->wall, dir))
+		h[count++] = world_cast(world, start, (t_v2){ -1, 0 });
+	dir.x += range;
+	dir.y += range;
+	if (world_tile(world, world->wall, dir))
+		h[count++] = world_cast(world, start, (t_v2){ 0, 1 });
+	dir.y -= (range * 2);
+	if (world_tile(world, world->wall, dir))
+		h[count++] = world_cast(world, start, (t_v2){ 0, -1 });
+	return count;
 }

@@ -20,7 +20,7 @@ inline void			me_init(t_me *me, t_v2 pos, const float focal)
 		{ { focal, -1.0f }, { focal, +1.0f } },
 		pos,
 		{ 0.0f, 0.0f },
-		0.15f,
+		0.10f,
 		0.015f,
 		0.0f
 	};
@@ -38,30 +38,31 @@ inline void			me_init(t_me *me, t_v2 pos, const float focal)
 static inline void	collide_or_move(t_me *me, t_world *world)
 {
 	t_v2	last;
-	t_hit	hit;
+	t_hit	hits[4];
+	int		count;
+	int		i;
 
 	last = me->where;
 	me->where = v2_add(me->where, me->velocity);
-	if (world_tile(world, world->wall, me->where))
+	if ((count = world_hit(world, me->where, 0.3f, hits)))
 	{
-
-		hit = world_cast(world, last, me->velocity);
-		if (math_isfl(hit.where.x))
+		i = -1;
+		while (++i < count)
 		{
-			me->velocity.x = 0.0;
-			me->velocity.y *= 0.95;
-		}
-		if (math_isfl(hit.where.y))
-		{
-			me->velocity.y = 0.0;
-			me->velocity.x *= 0.95;
+			if (hits[i].hor)
+			{
+				me->where.x = hits[i].where.x - .31f;
+				me->velocity.x = .0f;
+				me->velocity.y *= .9f;
+			}
+			else
+			{
+				me->velocity.y = hits[i].where.y - .31f;
+				me->velocity.y = .0f;
+				me->velocity.x *= .9f;
+			}
 		}
 		me->where = v2_add(last, me->velocity);
-		if (world_tile(world, world->wall, me->where))
-		{
-			me->velocity = (t_v2){ 0.0, 0.0 };
-			me->where = last;
-		}
 	}
 }
 

@@ -24,7 +24,7 @@ int	main(int ac, char *av[])
 	ft_bzero(&game, sizeof(t_game));
 	if (world_init(&world, ac, av))
 		return (game_quit(&game, "Unable to init world."));
-	me_init(&me, (t_v2){ 21.5f, 3.5f }, 0.8f);
+	me_init(&me, (t_v2){ 7.f, 7.f }, 0.8f);
 	if (game_init(&game, &world, &me))
 		return (game_quit(&game, "Unable to init game."));
 	return (game_loop(&game));
