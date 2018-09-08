@@ -28,10 +28,11 @@ typedef struct	s_me
 /*
 ** Initialize the player structure
 ** @param me    The player
-** @param pos   Initial player position
+** @param world Player world
 ** @param focal Player FOV focal
+ * @return      0 on success, -1 otherwise
 */
-extern void		me_init(t_me *me, t_v2 pos, float focal);
+extern int		me_init(t_me *me, t_world *world, float focal);
 /*
 ** Move the player based on the keyboard state
 ** @param me   The player
