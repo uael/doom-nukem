@@ -6,7 +6,7 @@
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#             */
-/*   Updated: 1970/01/01 00:00:42 by alucas-          ###   ########.fr       */
+/*   Updated: 2018/09/08 18:03:32 by cmalfroy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ static inline void	render_y(t_game *game, int x, t_hit hit, const t_wall *wall)
 				game->world->floor);
 		else if (y > wall->top)
 			text(&t, game, ln_lerp(tra, v2_pcast(wall->size, game->gpu.h, y)),
-				 game->world->ceil);
+				game->world->ceil);
 		else
 		{
 			t.pixel.x = hit.hor ? hit.where.y : hit.where.x;

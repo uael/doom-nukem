@@ -22,9 +22,6 @@
 # define WALLS_MY (18)
 # define WALLS_TEXTURE_SIZE (64)
 
-# define WEAPONS_W (324)
-# define WEAPONS_H (293)
-
 typedef struct	s_display
 {
 	uint32_t	*pixels;
@@ -37,7 +34,6 @@ typedef struct	s_gpu
 	SDL_Renderer	*renderer;
 	SDL_Texture		*screen;
 	SDL_Surface		*walls;
-	SDL_Surface		*weapons;
 	t_display		display;
 	int				w;
 	int				h;

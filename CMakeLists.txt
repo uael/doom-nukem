@@ -99,5 +99,9 @@ add_main(wolf3d
   ${__SRC_DIR}/gpu.c
   ${__SRC_DIR}/world.c
   ${__SRC_DIR}/me.c
-  ${__SRC_DIR}/math.c
-  ${__SRC_DIR}/main.c)
+  ${__SRC_DIR}/math1.c
+  ${__SRC_DIR}/math2.c
+  ${__SRC_DIR}/math3.c
+  ${__SRC_DIR}/math4.c
+  ${__SRC_DIR}/main.c
+  ${__SRC_DIR}/raycast.c)
