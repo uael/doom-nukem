@@ -30,7 +30,7 @@ typedef struct	s_me
 ** @param me    The player
 ** @param world Player world
 ** @param focal Player FOV focal
- * @return      0 on success, -1 otherwise
+** @return      0 on success, -1 otherwise
 */
 extern int		me_init(t_me *me, t_world *world, float focal);
 /*

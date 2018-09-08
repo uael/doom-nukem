@@ -65,24 +65,22 @@ static inline void	collide_or_move(t_me *me, t_world *world)
 
 	last = me->where;
 	me->where = v2_add(me->where, me->velocity);
-	if ((count = world_hit(world, me->where, 0.3f, hits)))
+	if ((count = world_hit(world, me->where, 0.2f, hits)))
 	{
 		i = -1;
 		while (++i < count)
-		{
 			if (hits[i].hor)
 			{
-				me->where.x = hits[i].where.x - .31f;
+				me->where.x = hits[i].where.x - .21f;
 				me->velocity.x = .0f;
 				me->velocity.y *= .95f;
 			}
 			else
 			{
-				me->velocity.y = hits[i].where.y - .31f;
+				me->velocity.y = hits[i].where.y - .21f;
 				me->velocity.y = .0f;
 				me->velocity.x *= .95f;
 			}
-		}
 		me->where = v2_add(last, me->velocity);
 	}
 }

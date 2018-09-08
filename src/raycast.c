@@ -10,6 +10,8 @@
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "wolf/world.h"
+
 inline int			world_tile(t_world *world, uint8_t *tiles, t_v2 a)
 {
 	if (a.x > world->width || a.y > world->height)

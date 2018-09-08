@@ -32,7 +32,7 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 	gpu->walls = SDL_ConvertSurfaceFormat(gpu->walls,
 		SDL_PIXELFORMAT_RGBA8888, 0);
 	SDL_LockSurface(gpu->walls);
-	if (gpu->walls->w != WALLS_W || gpu->walls->h != WALLS_W)
+	if (gpu->walls->w != WALLS_W || gpu->walls->h != WALLS_H)
 		return (-1);
 	return (0);
 }
@@ -49,11 +49,6 @@ inline void	gpu_destroy(t_gpu *gpu)
 	{
 		SDL_UnlockSurface(gpu->walls);
 		SDL_FreeSurface(gpu->walls);
-	}
-	if (gpu->weapons)
-	{
-		SDL_UnlockSurface(gpu->weapons);
-		SDL_FreeSurface(gpu->weapons);
 	}
 }
 

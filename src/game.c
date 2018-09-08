@@ -38,7 +38,7 @@ int	game_quit(t_game *game, const char *msg)
 	if ((error = SDL_GetError()) && *error)
 		ft_dprintf(2, "wolf3d: %s\n", error);
 	SDL_Quit();
-	exit(error && *error ? 1 : 0);
+	return (error && *error ? 1 : 0);
 }
 
 int	game_loop(t_game *game)
