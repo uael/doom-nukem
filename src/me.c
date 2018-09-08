@@ -14,8 +14,29 @@
 
 #include <SDL2/SDL.h>
 
-inline void			me_init(t_me *me, t_v2 pos, const float focal)
+static inline int	find_start(t_v2 *start, t_world *world)
 {
+	start->x = -1.5f;
+	while ((start->x += 1.f) < world->width)
+	{
+		start->y = -1.5f;
+		while ((start->y += 1.f) < world->height)
+		{
+			if (!world_tile(world, world->wall, *start)
+				&& world_tile(world, world->floor, *start)
+				&& world_tile(world, world->ceil, *start))
+				return (0);
+		}
+	}
+	return (-1);
+}
+
+inline int			me_init(t_me *me, t_world *world, const float focal)
+{
+	t_v2 pos;
+
+	if (find_start(&pos, world))
+		return (-1);
 	*me = (t_me){
 		{ { focal, -1.0f }, { focal, +1.0f } },
 		pos,
@@ -24,6 +45,7 @@ inline void			me_init(t_me *me, t_v2 pos, const float focal)
 		0.015f,
 		0.0f
 	};
+	return (0);
 }
 
 /*

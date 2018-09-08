@@ -113,6 +113,10 @@ inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 dir)
 	return (hit_ray(world, dir, ray, v2_mag(v2_sub(hor_step, ver_step))));
 }
 
+/*
+** This is costly.. but make wall sliding and collision mush better.. 
+*/
+
 inline int			world_hit(t_world *world, t_v2 start, float range, t_hit *h)
 {
 	int count;
