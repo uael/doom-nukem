@@ -28,11 +28,10 @@ inline void			me_init(t_me *me, t_v2 pos, const float focal)
 
 /*
 ** Prevent collision and perform wall sliding
-** If the new position collide a wall:
-**  - calculate the hit position
+** If the new position collide a wall in a range of .3f:
+**  - calculate the hit positions
 **  - cancel player velocity on collided axes
 **  - reduce un-collided axes velocity by 5%
-**  - If we still collide, keep calm, stay in place, don't SEGFAULT..
 */
 
 static inline void	collide_or_move(t_me *me, t_world *world)
@@ -53,13 +52,13 @@ static inline void	collide_or_move(t_me *me, t_world *world)
 			{
 				me->where.x = hits[i].where.x - .31f;
 				me->velocity.x = .0f;
-				me->velocity.y *= .9f;
+				me->velocity.y *= .95f;
 			}
 			else
 			{
 				me->velocity.y = hits[i].where.y - .31f;
 				me->velocity.y = .0f;
-				me->velocity.x *= .9f;
+				me->velocity.x *= .95f;
 			}
 		}
 		me->where = v2_add(last, me->velocity);

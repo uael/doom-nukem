@@ -116,22 +116,21 @@ inline t_hit		world_cast(t_world *world, t_v2 where, t_v2 dir)
 inline int			world_hit(t_world *world, t_v2 start, float range, t_hit *h)
 {
 	int count;
+	int x, y;
 	t_v2 dir;
 
 	count = 0;
-	dir = start;
-	dir.x += range;
-	if (world_tile(world, world->wall, dir))
-		h[count++] = world_cast(world, start, (t_v2){ 1, 0 });
-	dir.x -= (range * 2);
-	if (world_tile(world, world->wall, dir))
-		h[count++] = world_cast(world, start, (t_v2){ -1, 0 });
-	dir.x += range;
-	dir.y += range;
-	if (world_tile(world, world->wall, dir))
-		h[count++] = world_cast(world, start, (t_v2){ 0, 1 });
-	dir.y -= (range * 2);
-	if (world_tile(world, world->wall, dir))
-		h[count++] = world_cast(world, start, (t_v2){ 0, -1 });
+	x = -2;
+	while (++x <= 1 && count < 4)
+	{
+		y = -2;
+		while (++y <= 1 && count < 4)
+			if (x || y)
+			{
+				dir = (t_v2){ start.x + (range * x), start.y + (range * y) };
+				if (world_tile(world, world->wall, dir))
+					h[count++] = world_cast(world, start, (t_v2){ x, y });
+			}
+	}
 	return count;
 }
