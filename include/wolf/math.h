@@ -27,6 +27,7 @@ typedef struct	s_hit
 	int			tile;
 	t_v2		where;
 	int			hor;
+	float		step;
 }				t_hit;
 
 typedef struct	s_line

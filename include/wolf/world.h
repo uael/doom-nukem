@@ -26,7 +26,7 @@ typedef struct	s_world
 
 extern int		world_init(t_world *world, int ac, char *av[]);
 extern int		world_tile(t_world *world, uint8_t *tiles, t_v2 a);
-extern t_hit	world_cast(t_world *world, t_v2 where, t_v2 dir);
+extern int		world_cast(t_hit *hiy, t_world *world, t_v2 where, t_v2 dir);
 extern int		world_hit(t_world *world, t_v2 start, float range, t_hit *h);
 
 #endif
