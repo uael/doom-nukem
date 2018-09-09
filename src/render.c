@@ -28,7 +28,7 @@ static inline void	draw(t_game *game, int x, int y, t_text *t)
 	float		pct;
 	uint8_t		rgba[4];
 
-	if (!(t->tile--) || t->dist >= 3.5f)
+	if (!(t->tile--) || t->dist >= RENDER_DST)
 		color = 0;
 	else
 	{
@@ -39,7 +39,7 @@ static inline void	draw(t_game *game, int x, int y, t_text *t)
 		color = *(uint32_t *)((uint8_t *)game->gpu.walls->pixels +
 			(((WALLS_W * ty) + tx) * game->gpu.walls->format->BytesPerPixel));
 		SDL_GetRGB(color, game->gpu.walls->format, rgba, rgba + 1, rgba + 2);
-		pct = ((3.5f - t->dist) / 3.5f);
+		pct = ((RENDER_DST - t->dist) / RENDER_DST);
 		color = SDL_MapRGB(game->gpu.walls->format,
 			(uint8_t)(rgba[0] * pct), (uint8_t)(rgba[1] * pct),
 			(uint8_t)(rgba[2] * pct));

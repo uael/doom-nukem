@@ -15,6 +15,8 @@
 
 # include "wolf/game.h"
 
+# define RENDER_DST 3.5f
+
 typedef struct	s_wall
 {
 	int			top;
