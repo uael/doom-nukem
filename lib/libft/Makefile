@@ -10,31 +10,66 @@
 #                                                                              #
 # **************************************************************************** #
 
-BUILD_TYPE ?= Release
-BUILD_DIR = build/$(BUILD_TYPE)
-BUILD_PROJ_DIR = $(BUILD_DIR)/CMakeFiles
+.DEFAULT_GOAL := libft.a
 
-CMAKE ?= cmake
-CMAKE_FLAGS += -DCMAKE_BUILD_TYPE=$(BUILD_TYPE)
-CMAKE_G_FLAGS ?= -j8
+# ------------------------------------------------------------------------------
+# Configuration
+# ------------------------------------------------------------------------------
 
-.DEFAULT_GOAL := all
-.SILENT:
-.PHONY: clean config fclean install re
+MAKE_DEPS = Makefile
 
-$(BUILD_DIR) config:
-	mkdir -p $(BUILD_DIR); cd $(BUILD_DIR) && $(CMAKE) $(CMAKE_FLAGS) $(CURDIR)
+CC=gcc
+LD=gcc
+
+ifneq ($(DEBUG),)
+  CONFIG = debug
+  CFLAGS += -g -O0
+  TARGET_SUFFIX = -debug
+else
+  CONFIG = release
+  CFLAGS += -O3 -Wall -Werror -Wextra
+endif
+
+BUILD_DIR = build
+BUILD_PATH := $(BUILD_DIR)/$(CONFIG)
+
+# ------------------------------------------------------------------------------
+# Sources & Target
+# ------------------------------------------------------------------------------
+
+TARGET = libft
+
+INCLUDE = include
+
+include src/makefile.mk
+MAKE_DEPS += src/makefile.mk
+
+TARGET_LIB := $(TARGET)$(TARGET_SUFFIX).a
+all: $(TARGET_LIB)
+
+# ------------------------------------------------------------------------------
+# Rules
+# ------------------------------------------------------------------------------
+
+V ?= @
+
+-include $(addprefix $(BUILD_PATH)/,$(SRC:.c=.d))
+
+$(BUILD_PATH)/%.o: %.c $(MAKE_DEPS)
+	@echo "  CC      $(notdir $<)"
+	@mkdir -p $(dir $@)
+	$(V)$(CC) $< -c $(CFLAGS) $(addprefix -I,$(INCLUDE)) \
+		$(addprefix -D,$(DEFINE)) -MMD -MF $(@:.o=.d) -o $@
+
+$(TARGET_LIB): $(addprefix $(BUILD_PATH)/,$(SRC:.c=.o))
+	@echo "  LD      $(notdir $@)"
+	$(V)ar -rc $(TARGET).a $^
+	$(V)ranlib $(TARGET).a
 
 clean:
-	[ -d $(BUILD_PROJ_DIR) ] && find $(BUILD_PROJ_DIR) -name "*.o" -delete
+	@$(RM) -rf $(BUILD_DIR)
 
-fclean:
-	[ -d $(BUILD_DIR) ] && find $(BUILD_DIR) -name "*.o" -delete
-
-mrproper:
-	rm -rf $(BUILD_DIR)
+fclean: clean
+	@$(RM) -f $(TARGET_BIN)
 
 re: fclean all
-
-%: $(BUILD_DIR)
-	$(CMAKE) --build $(BUILD_DIR) --target $@ -- $(CMAKE_G_FLAGS)
