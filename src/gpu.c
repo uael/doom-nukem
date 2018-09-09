@@ -73,6 +73,7 @@ inline void	gpu_put(t_gpu *gpu, const int x, const int y,
 inline void	gpu_unlock(const t_gpu *gpu)
 {
 	SDL_UnlockTexture(gpu->screen);
+	SDL_RenderClear(gpu->renderer);
 	SDL_RenderCopyEx(gpu->renderer, gpu->screen, NULL,
 		&(SDL_Rect){
 			(gpu->w - gpu->h) / 2,

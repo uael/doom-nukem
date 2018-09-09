@@ -17,7 +17,7 @@ int	game_init(t_game *g, t_world *world, t_me *me)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 		return (-1);
-	if (gpu_init(&g->gpu, 1024, 640))
+	if (gpu_init(&g->gpu, WIDTH, HEIGHT))
 		return (-1);
 	g->running = TRUE;
 	g->world = world;
@@ -56,7 +56,7 @@ int	game_loop(t_game *game)
 		if (e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE
 			|| e.key.keysym.sym == SDLK_END)
 			break ;
-		if (game->me->velocity.x || game->me->velocity.y
+		if (game->me->velocity.x > 0.00001 || game->me->velocity.y > 0.00001
 			|| e.key.keysym.sym == SDLK_w || e.key.keysym.sym == SDLK_a
 			|| e.key.keysym.sym == SDLK_s || e.key.keysym.sym == SDLK_d
 			|| e.key.keysym.sym == SDLK_RIGHT || e.key.keysym.sym == SDLK_LEFT)

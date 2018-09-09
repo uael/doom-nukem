@@ -56,32 +56,32 @@ inline int			me_init(t_me *me, t_world *world, const float focal)
 **  - reduce un-collided axes velocity by 5%
 */
 
-static inline void	collide_or_move(t_me *me, t_world *world)
+static inline void	collide_or_move(t_me *me, t_world *wrd)
 {
 	t_v2	last;
-	t_hit	hits[4];
-	int		count;
-	int		i;
+	t_hit	hit;
 
 	last = me->where;
 	me->where = v2_add(me->where, me->velocity);
-	if ((count = world_hit(world, me->where, 0.2f, hits)))
+	if (world_tile(wrd, wrd->wall, me->where))
 	{
-		i = -1;
-		while (++i < count)
-			if (hits[i].hor)
-			{
-				me->where.x = hits[i].where.x - .21f;
-				me->velocity.x = .0f;
-				me->velocity.y *= .95f;
-			}
-			else
-			{
-				me->velocity.y = hits[i].where.y - .21f;
-				me->velocity.y = .0f;
-				me->velocity.x *= .95f;
-			}
-		me->where = v2_add(last, me->velocity);
+		hit.from = last;
+		world_cast(&hit, wrd, last, me->velocity);
+		if (hit.hor)
+		{
+			me->velocity.x = 0.0;
+			me->velocity.y *= 0.95;
+		}
+		else
+		{
+			me->velocity.y = 0.0;
+			me->velocity.x *= 0.95;
+		}
+		if (world_tile(wrd, wrd->wall, me->where = v2_add(last, me->velocity)))
+		{
+			me->velocity = (t_v2){ 0.0, 0.0 };
+			me->where = last;
+		}
 	}
 }
 

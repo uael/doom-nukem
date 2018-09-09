@@ -15,7 +15,9 @@
 
 # include "wolf/game.h"
 
-# define RENDER_DST 3.5f
+# define RENDER_DST (3.5f)
+# define WIDTH      (1024)
+# define HEIGHT     (640)
 
 typedef struct	s_wall
 {

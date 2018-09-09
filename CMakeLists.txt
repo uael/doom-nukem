@@ -104,5 +104,4 @@ add_main(wolf3d
   ${__SRC_DIR}/math2.c
   ${__SRC_DIR}/math3.c
   ${__SRC_DIR}/math4.c
-  ${__SRC_DIR}/main.c
-  ${__SRC_DIR}/raycast.c)
+  ${__SRC_DIR}/main.c)

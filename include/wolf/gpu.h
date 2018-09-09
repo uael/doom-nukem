@@ -19,7 +19,6 @@
 # define WALLS_W (384)
 # define WALLS_H (1216)
 # define WALLS_MX (6)
-# define WALLS_MY (18)
 # define WALLS_TEXTURE_SIZE (64)
 
 typedef struct	s_display

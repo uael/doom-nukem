@@ -11,13 +11,10 @@
 /* ************************************************************************** */
 
 #include "wolf/world.h"
+#include "wolf/render.h"
 
 #include <fcntl.h>
 #include <unistd.h>
-
-#define HDR_SZ   6
-#define TILE_SZ  2
-#define TILE_MAX 45
 
 static inline int	compress(t_world *world, uint8_t *buf)
 {
@@ -70,4 +67,46 @@ inline int			world_init(t_world *world, int ac, char *av[])
 	world->wall = world->ceil + (world->width * world->height);
 	world->floor = world->wall + (world->width * world->height);
 	return (close(fd));
+}
+
+inline int			world_tile(t_world *world, uint8_t *tiles, t_v2 a)
+{
+	if (a.x > world->width || a.y > world->height)
+		return (1);
+	return ((int)tiles[((int)a.y * world->width) + (int)a.x]);
+}
+
+static int			hit_ray(t_hit *hit, t_world *world, t_v2 dir, t_v2 ray)
+{
+	t_v2	dc;
+	t_v2	test;
+
+	dc = v2_mul(dir, 0.01f);
+	if (hit->step < 1e-3f)
+		test = v2_add(ray, dc);
+	else if ((hit->hor = (math_dec(ray.x) == 0.0f)))
+		test = v2_add(ray, (t_v2){ dc.x, 0.0f });
+	else
+		test = v2_add(ray, (t_v2){ 0.0f, dc.y });
+	if (v2_dist(hit->from, ray) > RENDER_DST
+		|| (hit->tile = world_tile(world, world->wall, test)))
+	{
+		hit->where = ray;
+		return (1);
+	}
+	return (world_cast(hit, world, ray, dir));
+}
+
+inline int			world_cast(t_hit *hit, t_world *world, t_v2 where, t_v2 dir)
+{
+	t_v2	hor_step;
+	t_v2	ver_step;
+	t_v2	ray;
+
+	hor_step = v2_steps_hor(where, dir);
+	ver_step = v2_steps_ver(where, dir);
+	ray = v2_mag(v2_sub(hor_step, where)) < v2_mag(v2_sub(ver_step, where))
+		? hor_step : ver_step;
+	hit->step = v2_mag(v2_sub(hor_step, ver_step));
+	return (hit_ray(hit, world, dir, ray));
 }
