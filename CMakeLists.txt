@@ -11,7 +11,7 @@
 # **************************************************************************** #
 
 cmake_minimum_required(VERSION 3.1 FATAL_ERROR)
-project(wolf3d VERSION 0.0.1 LANGUAGES C)
+project(dukem VERSION 0.0.1 LANGUAGES C)
 
 list(INSERT CMAKE_MODULE_PATH 0 ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -94,14 +94,7 @@ macro(add_main NAME)
   endif ()
 endmacro()
 
-add_main(wolf3d
-  ${__SRC_DIR}/game.c
-  ${__SRC_DIR}/render.c
-  ${__SRC_DIR}/gpu.c
-  ${__SRC_DIR}/world.c
-  ${__SRC_DIR}/me.c
-  ${__SRC_DIR}/math1.c
-  ${__SRC_DIR}/math2.c
-  ${__SRC_DIR}/math3.c
-  ${__SRC_DIR}/math4.c
-  ${__SRC_DIR}/main.c)
+add_main(domm-nukem
+  ${__SRC_DIR}/dukem.c
+  ${__SRC_DIR}/level.c
+  ${__SRC_DIR}/tile.c)

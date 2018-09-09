@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   math.c                                             :+:      :+:    :+:   */
+/*   dukem/level.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -10,24 +10,38 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <wolf.h>
-#include <libft.h>
+#ifndef DUKEM_LEVEL_H
+# define DUKEM_LEVEL_H
 
-inline float	v2_pcast(float size, int yres, int y)
+# include "dukem/tile.h"
+
+/*
+** We only need to known where to start since all tile have to be connected..
+** Save end for now, TODO
+*/
+
+typedef struct	s_level
 {
-	return (size / (2 * (y + 1) - yres));
-}
+	t_tile		*start;
+	t_tile		*end;
+}				t_level;
 
-inline t_line	line_rotate(const t_line l, const float t)
-{
-	t_line line;
+/*
+** Read & write a level from file,
+** the binary have the following format:
+** | Level length   2 bytes
+** | Tiles length   2 bytes
+** | Tile           n byte(s)
+**   | Tile kind    1 byte
+**   | Tile data    x byte(s) TODO
+**   | Links count  1 byte
+**   | Links        n byte(s)
+**     | Tile index 1 byte
+**     ..
+**   ..
+*/
 
-	line.a = v2_turn(l.a, t);
-	line.b = v2_turn(l.b, t);
-	return (line);
-}
+extern int		level_read(t_level *level, const char *file);
+extern int		level_write(const t_level *level, const char *file);
 
-inline t_v2		ln_lerp(t_line l, float n)
-{
-	return (v2_add(l.a, v2_mul(v2_sub(l.b, l.a), n)));
-}
+#endif
