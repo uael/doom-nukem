@@ -23,8 +23,11 @@ LD=gcc
 
 ifneq ($(DEBUG),)
   CONFIG = debug
-  CFLAGS += -g -O0
+  CFLAGS += -g3 -O0
   TARGET_SUFFIX = -debug
+  ifneq ($(ASAN),)
+  	CFLAGS += -fsanitize=address
+  endif
 else
   CONFIG = release
   CFLAGS += -O3 -Wall -Werror -Wextra
@@ -37,14 +40,14 @@ BUILD_PATH := $(BUILD_DIR)/$(CONFIG)
 # libft
 # ------------------------------------------------------------------------------
 
-LIBFT_LIB=lib/libft/libft.a
+LIBFT_LIB=libft/libft.a
 
 $(LIBFT_LIB):
 	@$(MAKE) -C $(dir $@)
 
 MAKE_DEPS += $(LIBFT_LIB)
-CFLAGS += -Ilib/libft/include
-LDFLAGS += -Llib/libft -lft
+CFLAGS += -Ilibft/include
+LDFLAGS += -Llibft -lft
 
 # ------------------------------------------------------------------------------
 # Deps

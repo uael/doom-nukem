@@ -28,8 +28,9 @@ set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS "Debug" "Release" "San")
 ## ************************************************************************** ##
 # Dependencies
 ##
-add_subdirectory(lib)
+add_subdirectory(libft)
 set(__DEPS libft)
+
 find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 link_directories(${SDL2_LIBRARY_DIRS} ${SDL2_IMAGE_LIBRARY_DIRS})
