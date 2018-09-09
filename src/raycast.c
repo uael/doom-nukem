@@ -6,7 +6,7 @@
 /*   By: alucas- <alucas-@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 1970/01/01 00:00:42 by alucas-           #+#    #+#             */
-/*   Updated: 2018/09/08 18:03:32 by cmalfroy         ###   ########.fr       */
+/*   Updated: 2018/09/09 11:45:56 by cmalfroy         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,12 +34,12 @@ static int			hit_ray(t_hit *hit, t_world *world, t_v2 dir, t_v2 ray)
 	if ((hit->tile = world_tile(world, world->wall, test)))
 	{
 		hit->where = ray;
-		return 1;
+		return (1);
 	}
 	return (world_cast(hit, world, ray, dir));
 }
 
-inline int		world_cast(t_hit *hit, t_world *world, t_v2 where, t_v2 dir)
+inline int			world_cast(t_hit *hit, t_world *world, t_v2 where, t_v2 dir)
 {
 	t_v2	hor_step;
 	t_v2	ver_step;
