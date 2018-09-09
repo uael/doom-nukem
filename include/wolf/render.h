@@ -26,6 +26,7 @@ typedef struct	s_texture
 {
 	t_v2		pixel;
 	int			tile;
+	float		dist;
 }				t_text;
 
 extern void		game_render(t_game *game);

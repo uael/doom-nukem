@@ -17,6 +17,7 @@ static inline void	text(t_text *text, t_game *game, t_v2 pixel, uint8_t *tiles)
 {
 	text->tile = world_tile(game->world, tiles, pixel);
 	text->pixel = pixel;
+	text->dist = v2_dist(game->me->where, pixel);
 }
 
 static inline void	draw(t_game *game, int x, int y, t_text *t)
@@ -25,8 +26,10 @@ static inline void	draw(t_game *game, int x, int y, t_text *t)
 	int			ty;
 	int			i;
 	uint32_t	color;
+	float		pct;
+	uint8_t		rgba[4];
 
-	if (!(t->tile--))
+	if (!(t->tile--) || t->dist >= 3.5f)
 		color = 0;
 	else
 	{
@@ -36,7 +39,11 @@ static inline void	draw(t_game *game, int x, int y, t_text *t)
 		ty += (t->tile / WALLS_MX) * WALLS_TEXTURE_SIZE;
 		i = (WALLS_W * ty) + tx;
 		color = *(uint32_t *)((uint8_t *)game->gpu.walls->pixels +
-			(i * game->gpu.walls->format->BytesPerPixel));
+							  (i * game->gpu.walls->format->BytesPerPixel));
+		SDL_GetRGB(color, game->gpu.walls->format, rgba, rgba + 1, rgba + 2);
+		pct = ((3.5f - t->dist) / 3.5f);
+		color = SDL_MapRGB(game->gpu.walls->format,
+			rgba[0] * pct, rgba[1] * pct, rgba[2] * pct);
 	}
 	gpu_put(&game->gpu, x, y, color);
 }
@@ -64,6 +71,7 @@ static inline void	render_y(t_game *game, int x, t_hit hit, const t_wall *wall)
 			t.pixel.x = hit.hor ? hit.where.y : hit.where.x;
 			t.pixel.y = 0.5f - ((float)y - cen) / wall->size;
 			t.tile = hit.tile;
+			t.dist = v2_dist(game->me->where, hit.where);
 		}
 		draw(game, x, y++, &t);
 	}
@@ -100,9 +108,8 @@ void				game_render(t_game *game)
 	while (++x < game->gpu.w)
 	{
 		dir = ln_lerp(camera, x / (float)game->gpu.w);
-		hit = world_cast(game->world, game->me->where, dir);
-		wall_project(&wall,
-			(t_v2){ game->gpu.w, game->gpu.h },
+		world_cast(&hit, game->world, game->me->where, dir);
+		wall_project(&wall, (t_v2){ game->gpu.w, game->gpu.h },
 			game->me->fov.a.x,
 			v2_turn(v2_sub(hit.where, game->me->where), -game->me->theta));
 		render_y(game, x, hit, &wall);

@@ -66,8 +66,8 @@ inline int			world_init(t_world *world, int ac, char *av[])
 	desired = (((world->width * TILE_SZ) + 1) * world->height * 3) + 2;
 	if (read(fd, buf, (size_t)desired + 1) != desired || compress(world, buf))
 		return (close(fd) | -1);
-	world->floor = buf;
-	world->wall = world->floor + (world->width * world->height);
-	world->ceil = world->wall + (world->width * world->height);
+	world->ceil = buf;
+	world->wall = world->ceil + (world->width * world->height);
+	world->floor = world->wall + (world->width * world->height);
 	return (close(fd));
 }
