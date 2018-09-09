@@ -1,6 +1,6 @@
 /.idea/
 /cmake-build-*/
-/build/
+**/build/
 /wolf3d*
 *.dev
 *.san
@@ -11,6 +11,7 @@
 *.a
 *.o
 *.d
+*-debug*
 *.out
 *.lib
 *.dll
