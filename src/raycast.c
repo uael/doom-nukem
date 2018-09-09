@@ -31,7 +31,8 @@ static int			hit_ray(t_hit *hit, t_world *world, t_v2 dir, t_v2 ray)
 		test = v2_add(ray, (t_v2){ dc.x, 0.0f });
 	else
 		test = v2_add(ray, (t_v2){ 0.0f, dc.y });
-	if ((hit->tile = world_tile(world, world->wall, test)))
+	if (v2_dist(hit->from, ray) > 3.5f
+		|| (hit->tile = world_tile(world, world->wall, test)))
 	{
 		hit->where = ray;
 		return 1;

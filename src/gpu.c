@@ -22,10 +22,10 @@ inline int	gpu_init(t_gpu *gpu, int width, int height)
 		return (-1);
 	if (!(gpu->screen = SDL_CreateTexture(gpu->renderer,
 		SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING,
-		height - 200, width)))
+		height, width)))
 		return (-1);
 	gpu->w = width;
-	gpu->h = height - 200;
+	gpu->h = height;
 	IMG_Init(IMG_INIT_PNG);
 	if (!(gpu->walls = IMG_Load("asset/walls.png")))
 		return (-1);

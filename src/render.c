@@ -107,6 +107,7 @@ void				game_render(t_game *game)
 	while (++x < game->gpu.w)
 	{
 		dir = ln_lerp(camera, x / (float)game->gpu.w);
+		hit.from = game->me->where;
 		world_cast(&hit, game->world, game->me->where, dir);
 		wall_project(&wall, (t_v2){ game->gpu.w, game->gpu.h },
 			game->me->fov.a.x,

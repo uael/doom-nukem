@@ -17,7 +17,7 @@ int	game_init(t_game *g, t_world *world, t_me *me)
 {
 	if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO))
 		return (-1);
-	if (gpu_init(&g->gpu, 1024, 860))
+	if (gpu_init(&g->gpu, 1024, 640))
 		return (-1);
 	g->running = TRUE;
 	g->world = world;
