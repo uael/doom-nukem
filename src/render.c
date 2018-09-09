@@ -24,7 +24,6 @@ static inline void	draw(t_game *game, int x, int y, t_text *t)
 {
 	int			tx;
 	int			ty;
-	int			i;
 	uint32_t	color;
 	float		pct;
 	uint8_t		rgba[4];
@@ -37,13 +36,13 @@ static inline void	draw(t_game *game, int x, int y, t_text *t)
 		ty = (int)(fabsf((int)t->pixel.y - t->pixel.y) * WALLS_TEXTURE_SIZE);
 		tx += (t->tile % WALLS_MX) * WALLS_TEXTURE_SIZE;
 		ty += (t->tile / WALLS_MX) * WALLS_TEXTURE_SIZE;
-		i = (WALLS_W * ty) + tx;
 		color = *(uint32_t *)((uint8_t *)game->gpu.walls->pixels +
-							  (i * game->gpu.walls->format->BytesPerPixel));
+			(((WALLS_W * ty) + tx) * game->gpu.walls->format->BytesPerPixel));
 		SDL_GetRGB(color, game->gpu.walls->format, rgba, rgba + 1, rgba + 2);
 		pct = ((3.5f - t->dist) / 3.5f);
 		color = SDL_MapRGB(game->gpu.walls->format,
-			rgba[0] * pct, rgba[1] * pct, rgba[2] * pct);
+			(uint8_t)(rgba[0] * pct), (uint8_t)(rgba[1] * pct),
+			(uint8_t)(rgba[2] * pct));
 	}
 	gpu_put(&game->gpu, x, y, color);
 }
